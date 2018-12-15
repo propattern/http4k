@@ -57,7 +57,7 @@ abstract class ContractRendererContract(private val renderer: ContractRenderer) 
     }
 
     @Test
-    fun `renders as expect`() = runBlocking {
+    fun `renders as expect`() {
         val customBody = Body.json("the body of the message").toLens()
 
         val router = "/basepath" bind contract(renderer, "/", ApiKey(Query.required("the_api_key"), { true }),
@@ -112,7 +112,7 @@ abstract class ContractRendererContract(private val renderer: ContractRenderer) 
         )
 
         val expected = String(javaClass.getResourceAsStream("${javaClass.simpleName}.json").readBytes())
-        val actual = router(Request(GET, "/basepath?the_api_key=somevalue")).bodyString()
+        val actual = runBlocking { router(Request(GET, "/basepath?the_api_key=somevalue")).bodyString() }
 //        ServerFilters.Cors(CorsPolicy.UnsafeGlobalPermissive).then(router).asServer(SunHttp(8000)).start().block()
 //        println(actual)
         assertThat("no match", prettify(actual), equalTo(prettify(expected)))
