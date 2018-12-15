@@ -110,7 +110,7 @@ class ContractRouteTest {
             assertThat(contractRoute.newRequest(Uri.of("http://foo.com")), equalTo(Request(GET, expected)))
         }
 
-        val handler: HttpHandler = { Response(OK) }
+        val handler = HttpHandler { Response(OK) }
 
         assertRequest("/" bindContract GET to handler, "http://foo.com")
         assertRequest(Path.of("value") bindContract GET to { _ -> handler }, "http://foo.com/{value}")

@@ -62,7 +62,7 @@ class FakeRecorderHttp : HttpHandler {
         )
     )
 
-    override fun invoke(request: Request): Response = app(request)
+    override suspend fun invoke(request: Request): Response = app(request)
 }
 
 class FakeRecorderTest : RecorderCdc() {

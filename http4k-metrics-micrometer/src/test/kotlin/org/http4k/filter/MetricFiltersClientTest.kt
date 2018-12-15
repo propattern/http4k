@@ -22,7 +22,7 @@ class MetricFiltersClientTest {
     private val clock = TickingClock
     private var requestTimer = MetricFilters.Client.RequestTimer(registry, clock = clock)
     private var requestCounter = MetricFilters.Client.RequestCounter(registry)
-    private val remoteServerMock: HttpHandler = {
+    private val remoteServerMock = HttpHandler {
         when (it.uri.path) {
             "/one" -> Response(OK)
             else -> Response(NOT_FOUND)

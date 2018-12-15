@@ -1,5 +1,6 @@
 package org.http4k.serverless.lambda
 
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Body
 import org.http4k.core.MemoryBody
 import org.http4k.core.Method
@@ -16,7 +17,7 @@ import org.http4k.serverless.BootstrapAppLoader
 class LambdaFunction(env: Map<String, String> = System.getenv()) {
     private val app = BootstrapAppLoader(env)
 
-    fun handle(request: ApiGatewayProxyRequest) = app(request.asHttp4k()).asApiGateway()
+    fun handle(request: ApiGatewayProxyRequest) = runBlocking { app(request.asHttp4k()).asApiGateway() }
 }
 
 internal fun Response.asApiGateway() = ApiGatewayProxyResponse(status.code, headers.toMap(), bodyString())

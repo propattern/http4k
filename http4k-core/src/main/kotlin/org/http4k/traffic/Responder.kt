@@ -3,7 +3,6 @@ package org.http4k.traffic
 import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
 import org.http4k.core.HttpMessage
-import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.then
@@ -13,7 +12,7 @@ import org.http4k.filter.TrafficFilters
  * Provides HTTP Handlers which respond using pre-stored Requests.
  */
 object Responder {
-    private val fallback: (Request) -> Response = { Response(Status.SERVICE_UNAVAILABLE.description("no more traffic to replay")) }
+    private val fallback = HttpHandler { Response(Status.SERVICE_UNAVAILABLE.description("no more traffic to replay")) }
 
     /**
      * An HTTP Handler which responds to particular requests with the matching cached responses, or a 503.
@@ -28,6 +27,6 @@ object Responder {
             .filter(shouldReplay)
             .iterator()
             .let {
-                Filter { next -> { req -> if (it.hasNext()) it.next() else next(req) } }.then(fallback)
+                Filter { next -> HttpHandler { req -> if (it.hasNext()) it.next() else next(req) } }.then(fallback)
             }
 }

@@ -1,6 +1,7 @@
 package org.http4k.filter
 
 import org.http4k.core.Filter
+import org.http4k.core.HttpHandler
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.BAD_REQUEST
@@ -13,7 +14,7 @@ object RequestFilters {
      */
     object Tap {
         operator fun invoke(fn: (Request) -> Unit) = Filter { next ->
-            {
+            HttpHandler {
                 fn(it)
                 next(it)
             }
@@ -25,7 +26,7 @@ object RequestFilters {
      */
     object GZip {
         operator fun invoke() = Filter { next ->
-            { request ->
+            HttpHandler { request ->
                 next(request.body(request.body.gzipped()).replaceHeader("content-encoding", "gzip"))
             }
         }
@@ -36,7 +37,7 @@ object RequestFilters {
      */
     object GunZip {
         operator fun invoke() = Filter { next ->
-            { request ->
+            HttpHandler { request ->
                 request.header("content-encoding")
                     ?.let { if (it.contains("gzip")) it else null }
                     ?.let { next(request.body(request.body.gunzipped())) } ?: next(request)
@@ -63,7 +64,7 @@ object RequestFilters {
      */
     object ProxyHost {
         operator fun invoke(mode: ProxyProtocolMode = ProxyProtocolMode.Http): Filter = Filter { next ->
-            {
+            HttpHandler {
                 it.header("Host")?.let { host -> next(it.uri(mode(it.uri).authority(host))) }
                     ?: Response(BAD_REQUEST.description("Cannot proxy without host header"))
             }

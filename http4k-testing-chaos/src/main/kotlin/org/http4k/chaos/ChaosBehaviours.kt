@@ -43,7 +43,7 @@ object ChaosBehaviours {
      */
     object Latency {
         operator fun invoke(min: Duration = ofMillis(100), max: Duration = ofMillis(500)) = object : Behaviour {
-            override fun invoke(next: HttpHandler): HttpHandler = {
+            override suspend fun invoke(next: HttpHandler) = HttpHandler {
                 val delay = ThreadLocalRandom.current()
                     .nextInt(min.toMillis().toInt(), max.toMillis().toInt())
                 sleep(delay.toLong())
@@ -71,7 +71,7 @@ object ChaosBehaviours {
      */
     object ThrowException {
         operator fun invoke(e: Throwable = RuntimeException("Chaos behaviour injected!")) = object : Behaviour {
-            override fun invoke(next: HttpHandler): HttpHandler = { throw e }
+            override suspend fun invoke(next: HttpHandler) = HttpHandler { throw e }
             override fun toString() = "ThrowException ${e.javaClass.simpleName} ${e.localizedMessage}"
         }
     }
@@ -81,7 +81,7 @@ object ChaosBehaviours {
      */
     object ReturnStatus {
         operator fun invoke(status: Status = INTERNAL_SERVER_ERROR) = object : Behaviour {
-            override fun invoke(next: HttpHandler): HttpHandler = {
+            override suspend fun invoke(next: HttpHandler) = HttpHandler {
                 Response(status).with(Header.Common.CHAOS of "Status ${status.code}")
             }
 
@@ -94,7 +94,7 @@ object ChaosBehaviours {
      */
     object NoBody {
         operator fun invoke() = object : Behaviour {
-            override fun invoke(next: HttpHandler): HttpHandler = { next(it).body(EMPTY).with(Header.Common.CHAOS of "No body") }
+            override suspend fun invoke(next: HttpHandler) = HttpHandler { next(it).body(EMPTY).with(Header.Common.CHAOS of "No body") }
             override fun toString() = "NoBody"
         }
     }
@@ -104,7 +104,7 @@ object ChaosBehaviours {
      */
     object EatMemory {
         operator fun invoke() = object : Behaviour {
-            override fun invoke(next: HttpHandler): HttpHandler = {
+            override suspend fun invoke(next: HttpHandler) = HttpHandler {
                 mutableListOf<ByteArray>().run { while (true) this += ByteArray(1024 * 1024) }
                 next(it)
             }
@@ -120,7 +120,7 @@ object ChaosBehaviours {
         operator fun invoke() = object : Behaviour {
             fun overflow(): Unit = overflow()
 
-            override fun invoke(next: HttpHandler): HttpHandler = {
+            override suspend fun invoke(next: HttpHandler) = HttpHandler {
                 overflow()
                 next(it)
             }
@@ -134,7 +134,7 @@ object ChaosBehaviours {
      */
     object KillProcess {
         operator fun invoke() = object : Behaviour {
-            override fun invoke(next: HttpHandler): HttpHandler = {
+            override suspend fun invoke(next: HttpHandler) = HttpHandler {
                 System.exit(1)
                 next(it)
             }
@@ -148,7 +148,7 @@ object ChaosBehaviours {
      */
     object BlockThread {
         operator fun invoke() = object : Behaviour {
-            override fun invoke(next: HttpHandler): HttpHandler = {
+            override suspend fun invoke(next: HttpHandler): HttpHandler = HttpHandler {
                 next(it).apply { Thread.currentThread().join() }
             }
 
@@ -161,7 +161,7 @@ object ChaosBehaviours {
      */
     object None {
         operator fun invoke() = object : Behaviour {
-            override fun invoke(next: HttpHandler): HttpHandler = { next(it) }
+            override suspend fun invoke(next: HttpHandler) = HttpHandler { next(it) }
             override fun toString() = "None"
         }
     }
@@ -170,7 +170,7 @@ object ChaosBehaviours {
      * Provide a means of modifying a ChaosBehaviour at runtime.
      */
     class Variable(var current: Behaviour = None()) : Behaviour {
-        override fun invoke(next: HttpHandler): HttpHandler = {
+        override suspend fun invoke(next: HttpHandler) = HttpHandler {
             current.then(next)(it)
         }
 

@@ -32,7 +32,7 @@ object JettyClient {
         return object : DualSyncAsyncHttpHandler {
             override fun close() = client.stop()
 
-            override fun invoke(request: Request): Response = client.send(request)
+            override suspend fun invoke(request: Request): Response = client.send(request)
 
             override fun invoke(request: Request, fn: (Response) -> Unit) = client.sendAsync(request, fn)
 

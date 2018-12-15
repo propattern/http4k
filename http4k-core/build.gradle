@@ -2,6 +2,7 @@ description = 'sane HTTP request API for Kotlin'
 
 dependencies {
     provided Libs.kotlin_stdlib_jdk8
+    provided "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.0.0"
     provided Libs.javax_servlet_api
 
     testCompile Config.TestDependencies

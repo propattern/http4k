@@ -20,7 +20,7 @@ class OAuthCallback(
     private val oAuthPersistence: OAuthPersistence
 ) : HttpHandler {
 
-    private fun codeToAccessToken(code: String) =
+    private suspend fun codeToAccessToken(code: String) =
         api(Request(POST, providerConfig.tokenPath)
             .with(CONTENT_TYPE of APPLICATION_FORM_URLENCODED)
             .form("grant_type", "authorization_code")
@@ -30,7 +30,7 @@ class OAuthCallback(
             .form("code", code))
             .let { if (it.status == Status.OK) AccessTokenContainer(it.bodyString()) else null }
 
-    override fun invoke(request: Request): Response {
+    override suspend fun invoke(request: Request): Response {
         val state = request.query("state")?.toParameters() ?: emptyList()
         val crsfInState = state.find { it.first == "csrf" }?.second?.let(::CrossSiteRequestForgeryToken)
         return request.query("code")?.let { code ->

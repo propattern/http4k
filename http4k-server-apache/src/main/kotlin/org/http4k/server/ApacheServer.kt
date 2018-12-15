@@ -1,5 +1,6 @@
 package org.http4k.server
 
+import kotlinx.coroutines.runBlocking
 import org.apache.http.Header
 import org.apache.http.HttpEntityEnclosingRequest
 import org.apache.http.config.SocketConfig
@@ -31,7 +32,7 @@ class Http4kRequestHandler(handler: HttpHandler) : HttpRequestHandler {
     private val safeHandler = ServerFilters.CatchAll().then(handler)
 
     override fun handle(request: ApacheRequest, response: ApacheResponse, context: HttpContext) {
-        safeHandler(request.asHttp4kRequest()).into(response)
+        runBlocking { safeHandler(request.asHttp4kRequest()).into(response) }
     }
 
     private fun ApacheRequest.asHttp4kRequest(): Request =

@@ -23,6 +23,7 @@ import io.netty.handler.codec.http.HttpResponseStatus
 import io.netty.handler.codec.http.HttpServerCodec
 import io.netty.handler.codec.http.HttpUtil
 import io.netty.handler.codec.http.HttpVersion.HTTP_1_1
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Body
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.valueOf
@@ -46,7 +47,7 @@ class Http4kChannelHandler(handler: HttpHandler) : SimpleChannelInboundHandler<F
     override fun channelRead0(ctx: ChannelHandlerContext, request: FullHttpRequest) {
         if (HttpUtil.is100ContinueExpected(request)) ctx.write(Response(CONTINUE).asNettyResponse())
 
-        ctx.writeAndFlush(safeHandler(request.asRequest()).asNettyResponse()).apply {
+        ctx.writeAndFlush(runBlocking { safeHandler(request.asRequest()).asNettyResponse() }).apply {
             if (request.decoderResult() == SUCCESS) addListener(CLOSE) else ctx.close()
         }
     }

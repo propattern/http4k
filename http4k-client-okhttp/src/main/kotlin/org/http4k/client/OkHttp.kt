@@ -21,7 +21,7 @@ import java.net.UnknownHostException
 object OkHttp {
     operator fun invoke(client: OkHttpClient = defaultOkHttpClient(), bodyMode: BodyMode = BodyMode.Memory): DualSyncAsyncHttpHandler =
         object : DualSyncAsyncHttpHandler {
-            override fun invoke(request: Request): Response =
+            override suspend fun invoke(request: Request): Response =
                 try {
                     client.newCall(request.asOkHttp()).execute().asHttp4k(bodyMode)
                 } catch (e: ConnectException) {

@@ -1,6 +1,7 @@
 package org.http4k.client
 
 import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 import org.apache.http.HttpHost
 import org.apache.http.HttpRequest
 import org.apache.http.client.methods.CloseableHttpResponse
@@ -27,7 +28,7 @@ class ApacheClientTest : HttpClientContract({ SunHttp(it) }, ApacheClient(),
         , responseBodyMode = Stream)) {
 
     @Test
-    fun `connect timeout is handled`() {
+    fun `connect timeout is handled`() = runBlocking {
         ApacheClient(object : CloseableHttpClient() {
             override fun getParams() = TODO("not implemented")
 

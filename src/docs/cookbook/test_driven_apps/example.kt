@@ -3,6 +3,7 @@ package cookbook.test_driven_apps
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 import org.http4k.client.OkHttp
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
@@ -28,12 +29,12 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class AnswerRecorder(private val httpClient: HttpHandler) : (Int) -> Unit {
-    override fun invoke(answer: Int): Unit {
+    override fun invoke(answer: Int) {
         httpClient(Request(POST, "/" + answer.toString()))
     }
 }
 
-fun myMathsEndpoint(fn: (Int, Int) -> Int, recorder: (Int) -> Unit): HttpHandler = { req ->
+fun myMathsEndpoint(fn: (Int, Int) -> Int, recorder: (Int) -> Unit) = HttpHandler { req ->
     val answer = fn(req.query("first")!!.toInt(), req.query("second")!!.toInt())
     recorder(answer)
     Response(OK).body("the answer is $answer")
@@ -41,7 +42,7 @@ fun myMathsEndpoint(fn: (Int, Int) -> Int, recorder: (Int) -> Unit): HttpHandler
 
 class EndpointUnitTest {
     @Test
-    fun `adds numbers and records answer`() {
+    fun `adds numbers and records answer`() = runBlocking {
         var answer: Int? = null
         val unit = myMathsEndpoint({ first, second -> first + second }, { answer = it })
         val response = unit(Request(GET, "/").query("first", "123").query("second", "456"))
@@ -59,10 +60,10 @@ class FakeRecorderHttp : HttpHandler {
     val calls = mutableListOf<Int>()
 
     private val app = routes(
-        "/{answer}" bind POST to { request -> calls.add(request.path("answer")!!.toInt()); Response(OK) }
+        "/{answer}" bind POST to HttpHandler { request -> calls.add(request.path("answer")!!.toInt()); Response(OK) }
     )
 
-    override fun invoke(request: Request): Response = app(request)
+    override suspend fun invoke(request: Request): Response = app(request)
 }
 
 class FunctionalTest {
@@ -78,7 +79,7 @@ class FunctionalTest {
     }
 
     @Test
-    fun `not found`() {
+    fun `not found`() = runBlocking {
         val response = app(Request(GET, "/nothing").query("first", "123").query("second", "456"))
         response shouldMatch hasStatus(NOT_FOUND)
     }
@@ -96,19 +97,19 @@ class EndToEndTest {
     private val server = MyMathServer(8000, Uri.of("http://localhost:8001"))
 
     @BeforeEach
-    fun setup(): Unit {
+    fun setup() {
         recorder.start()
         server.start()
     }
 
     @AfterEach
-    fun teardown(): Unit {
+    fun teardown() {
         server.stop()
         recorder.stop()
     }
 
     @Test
-    fun `adds numbers`() {
+    fun `adds numbers`() = runBlocking {
         val response = client(Request(GET, "http://localhost:8000/add").query("first", "123").query("second", "456"))
         println(response)
         response shouldMatch hasStatus(OK).and(hasBody("the answer is 579"))

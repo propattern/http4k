@@ -1,5 +1,6 @@
 package org.http4k.client
 
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.HttpHandler
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -17,9 +18,9 @@ interface DualSyncAsyncHttpHandler : HttpHandler, AsyncHttpClient
  * Convert a synchronous HttpHandler API to mimic AsyncHttpClient
  */
 fun HttpHandler.withAsyncApi(): AsyncHttpClient = object : DualSyncAsyncHttpHandler {
-    override fun invoke(p1: Request): Response = this@withAsyncApi(p1)
+    override suspend fun invoke(request: Request): Response = this@withAsyncApi(request)
 
-    override fun invoke(request: Request, fn: (Response) -> Unit) = fn(invoke(request))
+    override fun invoke(request: Request, fn: (Response) -> Unit) = runBlocking { fn(invoke(request)) }
 }
 
 fun Status.toClientStatus(e: Exception) = description("Client Error: $description caused by ${e.localizedMessage}")

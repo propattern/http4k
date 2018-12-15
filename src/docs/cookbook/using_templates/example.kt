@@ -22,7 +22,7 @@ fun main() {
 
     val view = Body.view(renderer, TEXT_HTML)
 
-    val app: HttpHandler = {
+    val app = HttpHandler {
         val viewModel = Person("Bob", 45)
         Response(OK).body(renderer(viewModel))
         // OR:

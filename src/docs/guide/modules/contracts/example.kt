@@ -35,7 +35,7 @@ val route = ("/echo" / Path.of("name") meta {
 
 //2. Dynamic binding of calls to an HttpHandler
 //Next, bind this route to a function which creates an `HttpHandler` for each invocation, which receives the dynamic path elements from the path:
-fun echo(nameFromPath: String): HttpHandler = { request: Request ->
+fun echo(nameFromPath: String) = HttpHandler { request: Request ->
     val age = ageQuery(request)
     val sentMessage = stringBody(request)
 

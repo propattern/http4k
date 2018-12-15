@@ -10,7 +10,7 @@ import java.io.ByteArrayInputStream
 class ResourceListingHandler(private val dir: ResourceSummary, private val contents: Iterable<ResourceSummary>, private val renderer: DirectoryRenderer
 ) : HttpHandler {
 
-    override fun invoke(request: Request): Response =
+    override suspend fun invoke(request: Request): Response =
         ResourceInfoResource(dir, renderer(request.uri, dir, contents).toByteArray(Charsets.UTF_8), ContentType.TEXT_HTML).invoke(request)
 }
 

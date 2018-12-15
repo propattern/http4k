@@ -83,7 +83,7 @@ open class StaticRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     @Test
     fun `can apply filters`() {
         val rewritePathToRootIndex = Filter { next ->
-            {
+            HttpHandler {
                 next(it.uri(it.uri.path("/index.html")))
             }
         }
@@ -251,7 +251,7 @@ open class StaticRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
 
     private fun RoutingHttpHandler.assertFilterCalledOnce(path: String, expected: Status) {
         val calls = AtomicInteger(0)
-        val handler = Filter { next -> { calls.incrementAndGet(); next(it) } }.then(this)
+        val handler = Filter { next -> HttpHandler { calls.incrementAndGet(); next(it) } }.then(this)
         assertThat(handler(Request(GET, of(path))).status, equalTo(expected))
         assertThat(calls.get(), equalTo(1))
     }

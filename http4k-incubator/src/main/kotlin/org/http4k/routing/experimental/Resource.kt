@@ -40,7 +40,7 @@ interface Resource : HttpHandler {
             "ETag" to etag?.toHeaderString()
         )
 
-    override fun invoke(request: Request) = if (notModifiedSince(request) || etagMatch(request))
+    override suspend fun invoke(request: Request) = if (notModifiedSince(request) || etagMatch(request))
         MemoryResponse(NOT_MODIFIED, headers)
     else
         MemoryResponse(OK, headers, Body(openStream(), length)) // Pipeline is responsible for closing stream

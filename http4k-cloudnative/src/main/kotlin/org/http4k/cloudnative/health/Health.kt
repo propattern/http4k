@@ -22,7 +22,7 @@ object Health {
         checks: List<ReadinessCheck> = emptyList(),
         renderer: ReadinessCheckResultRenderer = DefaultReadinessCheckResultRenderer
     ) = routes(
-        "/liveness" bind GET to Liveness,
+        "/liveness" bind GET to Liveness(),
         "/readiness" bind GET to Readiness(checks, renderer),
         *extraRoutes
     )
@@ -31,7 +31,9 @@ object Health {
 /**
  * The Liveness check is used to determine if an app is alive.
  */
-object Liveness : HttpHandler by { Response(OK) }
+object Liveness {
+    operator fun invoke() = HttpHandler { Response(OK) }
+}
 
 /**
  * The Readiness check is used to determine if an app is prepared to receive live traffic.
@@ -40,7 +42,7 @@ object Readiness {
     operator fun invoke(
         checks: List<ReadinessCheck> = emptyList(),
         renderer: ReadinessCheckResultRenderer = DefaultReadinessCheckResultRenderer
-    ): HttpHandler = {
+    ) = HttpHandler {
         val overall = when {
             checks.isNotEmpty() -> checks.map { check ->
                 try {

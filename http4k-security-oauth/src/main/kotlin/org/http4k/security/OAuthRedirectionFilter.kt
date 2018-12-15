@@ -19,7 +19,7 @@ class OAuthRedirectionFilter(
     private val oAuthPersistence: OAuthPersistence
 ) : Filter {
 
-    override fun invoke(next: HttpHandler): HttpHandler = {
+    override suspend fun invoke(next: HttpHandler) = HttpHandler {
         if (oAuthPersistence.retrieveToken(it) != null) next(it) else {
             val csrf = generateCrsf()
             val redirect = Response(TEMPORARY_REDIRECT).with(LOCATION of providerConfig.authUri

@@ -43,7 +43,7 @@ object ApacheClient {
         client: CloseableHttpClient = defaultApacheHttpClient(),
         responseBodyMode: BodyMode = Memory,
         requestBodyMode: BodyMode = Memory
-    ): HttpHandler = { request ->
+    ) = HttpHandler { request ->
         try {
             client.execute(request.toApacheRequest(requestBodyMode)).toHttp4kResponse(responseBodyMode)
         } catch (e: ConnectTimeoutException) {

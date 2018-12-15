@@ -17,7 +17,7 @@ object ResponseFilters {
      */
     object Tap {
         operator fun invoke(fn: (Response) -> Unit) = Filter { next ->
-            {
+            HttpHandler {
                 next(it).let {
                     fn(it)
                     it
@@ -33,7 +33,7 @@ object ResponseFilters {
      */
     object ReportHttpTransaction {
         operator fun invoke(clock: Clock = Clock.systemUTC(), transactionLabeller: HttpTransactionLabeller = { it }, recordFn: (HttpTransaction) -> Unit): Filter = Filter { next ->
-            {
+            HttpHandler {
                 clock.instant().let { start ->
                     next(it).apply {
                         recordFn(transactionLabeller(HttpTransaction(it, this, between(start, clock.instant()))))
@@ -64,7 +64,7 @@ object ResponseFilters {
             .map { it.value }
             .map { it.split(";").first() }
 
-        override fun invoke(next: HttpHandler): HttpHandler = { request ->
+        override suspend fun invoke(next: HttpHandler) = HttpHandler { request ->
             next(request).let {
                 if (requestAcceptsGzip(request) && isCompressible(it)) {
                     it.body(it.body.gzipped()).replaceHeader("content-encoding", "gzip")
@@ -89,7 +89,7 @@ object ResponseFilters {
      */
     object GZip {
         operator fun invoke() = Filter { next ->
-            {
+            HttpHandler {
                 val originalResponse = next(it)
                 if ((it.header("accept-encoding") ?: "").contains("gzip", true)) {
                     originalResponse.let {
@@ -105,7 +105,7 @@ object ResponseFilters {
      */
     object GunZip {
         operator fun invoke() = Filter { next ->
-            {
+            HttpHandler {
                 next(it).let { response ->
                     response.header("content-encoding")
                         ?.let { if (it.contains("gzip")) it else null }

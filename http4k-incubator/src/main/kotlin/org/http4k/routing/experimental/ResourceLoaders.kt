@@ -50,5 +50,5 @@ interface ResourceLoading : Router {
 
     fun match(path: String): HttpHandler?
 
-    override fun match(request: Request): HttpHandler? = match(request.uri.path)
+    override suspend fun match(request: Request): HttpHandler? = match(request.uri.path)
 }

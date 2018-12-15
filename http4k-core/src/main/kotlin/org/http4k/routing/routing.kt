@@ -21,7 +21,7 @@ interface Router {
     /**
      * Attempt to supply an HttpHandler which can service the passed request.
      */
-    fun match(request: Request): HttpHandler?
+    suspend fun match(request: Request): HttpHandler?
 }
 
 /**
@@ -77,7 +77,7 @@ data class PathMethod(val path: String, val method: Method) {
         when (action) {
             is StaticRoutingHttpHandler -> action.withBasePath(path).let {
                 object : RoutingHttpHandler by it {
-                    override fun match(request: Request): HttpHandler? = when (method) {
+                    override suspend fun match(request: Request): HttpHandler? = when (method) {
                         request.method -> it.match(request)
                         else -> null
                     }

@@ -182,7 +182,7 @@ private class IndeterminateLengthResource : Resource {
 }
 
 private class InMemoryResourceLoader(val resources: Map<String, Resource>) : Router {
-    override fun match(request: Request): Resource? = resources[request.uri.path]
+    override suspend fun match(request: Request): Resource? = resources[request.uri.path]
 }
 
 

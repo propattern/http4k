@@ -20,7 +20,7 @@ fun main() {
         }
     }
 
-    fun PrintState(contexts: RequestContexts): HttpHandler = { request ->
+    fun PrintState(contexts: RequestContexts) = HttpHandler { request ->
         println(contexts[request].get<SharedState>("myKey"))
         Response(Status.OK)
     }

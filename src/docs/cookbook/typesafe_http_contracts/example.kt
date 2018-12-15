@@ -36,14 +36,14 @@ import java.time.Clock
 
 fun main() {
 
-    fun add(value1: Int, value2: Int): HttpHandler = {
+    fun add(value1: Int, value2: Int) = HttpHandler {
         Response(OK).with(
             Body.string(TEXT_PLAIN).toLens() of (value1 + value2).toString()
         )
     }
 
     val ageQuery = Query.int().required("age")
-    fun echo(name: String): HttpHandler = {
+    fun echo(name: String) = HttpHandler {
         Response(OK).with(
             Body.string(TEXT_PLAIN).toLens() of "hello $name you are ${ageQuery(it)}"
         )

@@ -20,7 +20,7 @@ fun main() {
     val renderer = HandlebarsTemplates().HotReload("src/test/resources")
 
     // first example uses a renderer to create a string
-    val app: HttpHandler = {
+    val app = HttpHandler {
         val viewModel = Person("Bob", 45)
         val renderedView = renderer(viewModel)
         Response(OK).body(renderedView)
@@ -30,7 +30,7 @@ fun main() {
     // the lens example uses the Body.view to also set the content type, and avoid using Strings
     val viewLens = Body.view(renderer, ContentType.TEXT_HTML)
 
-    val appUsingLens: HttpHandler = {
+    val appUsingLens = HttpHandler {
         Response(OK).with(viewLens of Person("Bob", 45))
     }
 

@@ -14,8 +14,8 @@ import org.http4k.hamkrest.hasStatus
 import org.junit.jupiter.api.Test
 
 val AddLatency = Filter { next ->
-    {
-        next(it).header("x-extra-header", "some value")
+    HttpHandler {
+                next(it).header("x-extra-header", "some value")
     }
 }
 

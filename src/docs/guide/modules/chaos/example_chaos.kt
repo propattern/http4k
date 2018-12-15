@@ -31,7 +31,7 @@ fun main() {
     // chain the stages together with then() and finally convert to a standard http4k Filter
     val filter = doNothingStage.then(errorStage).asFilter()
 
-    val svc: HttpHandler = { Response(OK).body("A normal response") }
+    val svc = HttpHandler { Response(OK).body("A normal response") }
     filter.then(svc).asServer(SunHttp(9000)).start().use {
         (1..10).forEach { performA(GET) }
 

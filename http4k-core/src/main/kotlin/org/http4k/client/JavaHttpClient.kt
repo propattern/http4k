@@ -14,7 +14,7 @@ import java.net.UnknownHostException
 import java.nio.ByteBuffer
 
 object JavaHttpClient {
-    operator fun invoke(): HttpHandler = { request: Request ->
+    operator fun invoke() = HttpHandler { request: Request ->
         try {
             val connection = (URL(request.uri.toString()).openConnection() as HttpURLConnection).apply {
                 instanceFollowRedirects = false

@@ -2,6 +2,7 @@ package org.http4k.server
 
 import com.sun.net.httpserver.HttpExchange
 import com.sun.net.httpserver.HttpServer
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Request
@@ -18,12 +19,14 @@ data class SunHttp(val port: Int = 8000) : ServerConfig {
         private val server = HttpServer.create(InetSocketAddress(port), 0)
         override fun start(): Http4kServer = apply {
             server.createContext("/") {
-                try {
-                    it.populate(httpHandler(it.toRequest()))
-                } catch (e: Exception) {
-                    it.sendResponseHeaders(500, 0)
+                runBlocking {
+                    try {
+                        it.populate(httpHandler(it.toRequest()))
+                    } catch (e: Exception) {
+                        it.sendResponseHeaders(500, 0)
+                    }
+                    it.close()
                 }
-                it.close()
             }
             server.start()
         }

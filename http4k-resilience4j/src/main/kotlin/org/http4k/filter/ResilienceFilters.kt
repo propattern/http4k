@@ -8,7 +8,9 @@ import io.github.resilience4j.ratelimiter.RateLimiter
 import io.github.resilience4j.ratelimiter.RequestNotPermitted
 import io.github.resilience4j.retry.Retry
 import io.github.resilience4j.retry.Retry.ofDefaults
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Filter
+import org.http4k.core.HttpHandler
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.SERVICE_UNAVAILABLE
 import org.http4k.core.Status.Companion.TOO_MANY_REQUESTS
@@ -25,11 +27,13 @@ object ResilienceFilters {
         operator fun invoke(circuitBreaker: CircuitBreaker = CircuitBreaker.ofDefaults("Circuit"),
                             isError: (Response) -> Boolean = { it.status.serverError },
                             onError: () -> Response = { Response(SERVICE_UNAVAILABLE.description("Circuit is open")) }) = Filter { next ->
-            {
+            HttpHandler {
                 try {
                     circuitBreaker.executeCallable {
-                        next(it).apply {
-                            if (isError(this)) circuitBreaker.onError(0, CircuitError)
+                        runBlocking {
+                            next(it).apply {
+                                if (isError(this)) circuitBreaker.onError(0, CircuitError)
+                            }
                         }
                     }
                 } catch (e: CircuitBreakerOpenException) {
@@ -49,11 +53,13 @@ object ResilienceFilters {
 
         operator fun invoke(retry: Retry = ofDefaults("Retrying"),
                             isError: (Response) -> Boolean = { it.status.serverError }) = Filter { next ->
-            {
+            HttpHandler {
                 try {
                     retry.executeCallable {
-                        next(it).apply {
-                            if (isError(this)) throw RetryError(this)
+                        runBlocking {
+                            next(it).apply {
+                                if (isError(this)) throw RetryError(this)
+                            }
                         }
                     }
                 } catch (e: RetryError) {
@@ -70,9 +76,9 @@ object ResilienceFilters {
     object RateLimit {
         operator fun invoke(rateLimit: RateLimiter = RateLimiter.ofDefaults("RateLimit"),
                             onError: () -> Response = { Response(TOO_MANY_REQUESTS.description("Rate limit exceeded")) }) = Filter { next ->
-            {
+            HttpHandler {
                 try {
-                    rateLimit.executeCallable { next(it) }
+                    rateLimit.executeCallable { runBlocking { next(it) } }
                 } catch (e: RequestNotPermitted) {
                     onError()
                 }
@@ -87,9 +93,9 @@ object ResilienceFilters {
     object Bulkheading {
         operator fun invoke(bulkhead: Bulkhead = Bulkhead.ofDefaults("Bulkhead"),
                             onError: () -> Response = { Response(TOO_MANY_REQUESTS.description("Bulkhead limit exceeded")) }) = Filter { next ->
-            {
+            HttpHandler {
                 try {
-                    bulkhead.executeCallable { next(it) }
+                    bulkhead.executeCallable { runBlocking { next(it) } }
                 } catch (e: BulkheadFullException) {
                     onError()
                 }
