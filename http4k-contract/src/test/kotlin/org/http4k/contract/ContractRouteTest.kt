@@ -38,7 +38,7 @@ class ContractRouteTest {
             headers += headerLens
             queries += queryLens
             receiving(bodyLens)
-        } bindContract GET to HttpHandler { Response(OK) }
+        } bindContract GET to2 { Response(OK) }
 
         assertThat(route.toRouter(Root).match(Request(GET, "").with(headerLens of "value", queryLens of "value", bodyLens of "hello")), present())
     }
@@ -52,7 +52,7 @@ class ContractRouteTest {
             headers += headerLens
             queries += queryLens
             receiving(bodyLens)
-        } bindContract GET to HttpHandler { Response(OK) }
+        } bindContract GET to2 { Response(OK) }
 
         val invalidRequest = Request(GET, "").with(headerLens of "value", bodyLens of "hello")
         val actual = route.toRouter(Root).match(invalidRequest)
@@ -98,7 +98,7 @@ class ContractRouteTest {
 
     @Test
     fun `0 parts - matches route`() = runBlocking {
-        val route = "/" bindContract GET to HttpHandler { Response(OK) }
+        val route = "/" bindContract GET to2 { Response(OK) }
         val router = route.toRouter(Root)
         assertThat(router.match(Request(GET, "/")), present())
         assertThat(router.match(Request(POST, "/")), absent())
