@@ -1,5 +1,6 @@
 package org.http4k.client
 
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.DELETE
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
@@ -34,7 +35,7 @@ abstract class AbstractHttpClientContract(private val serverConfig: (Int) -> Ser
 
     @BeforeEach
     fun before() {
-        val defaultHandler = { request: Request ->
+        val defaultHandler = HttpHandler { request: Request ->
             Response(OK)
                 .header("uri", request.uri.toString())
                 .header("header", request.header("header"))
@@ -42,35 +43,35 @@ abstract class AbstractHttpClientContract(private val serverConfig: (Int) -> Ser
                 .body(request.body)
         }
         val app = routes("/someUri" bind POST to defaultHandler,
-            "/cookies/set" bind GET to { req: Request ->
+            "/cookies/set" bind GET to HttpHandler { req: Request ->
                 Response(FOUND).header("Location", "/cookies").cookie(Cookie(req.query("name")!!, req.query("value")!!))
             },
-            "/cookies" bind GET to { req: Request ->
+            "/cookies" bind GET to HttpHandler { req: Request ->
                 Response(OK).body(req.cookies().joinToString(",") { it.name + "=" + it.value })
             },
-            "/empty" bind GET to { _: Request -> Response(OK).body("") },
-            "/relative-redirect/{times}" bind GET to { req: Request ->
+            "/empty" bind GET to HttpHandler { Response(OK).body("") },
+            "/relative-redirect/{times}" bind GET to HttpHandler { req: Request ->
                 val times = req.path("times")?.toInt() ?: 0
                 if (times == 0) Response(OK)
                 else Response(FOUND).header("Location", "/relative-redirect/${times - 1}")
             },
-            "/redirect" bind GET to { _: Request -> Response(FOUND).header("Location", "/someUri").body("") },
-            "/stream" bind GET to { _: Request -> Response(OK).body("stream".byteInputStream()) },
-            "/delay/{millis}" bind GET to { r: Request ->
+            "/redirect" bind GET to HttpHandler { Response(FOUND).header("Location", "/someUri").body("") },
+            "/stream" bind GET to HttpHandler { Response(OK).body("stream".byteInputStream()) },
+            "/delay/{millis}" bind GET to HttpHandler { r: Request ->
                 Thread.sleep(r.path("millis")!!.toLong())
                 Response(OK)
             },
             "/echo" bind routes(
-                DELETE to { _: Request -> Response(OK).body("delete") },
-                GET to { request: Request -> Response(OK).body(request.uri.toString()) },
-                POST to { request: Request -> Response(OK).body(request.bodyString()) }
+                DELETE to HttpHandler { Response(OK).body("delete") },
+                GET to HttpHandler { request: Request -> Response(OK).body(request.uri.toString()) },
+                POST to HttpHandler { request: Request -> Response(OK).body(request.bodyString()) }
             ),
-            "/headers" bind { request: Request -> Response(OK).body(request.headers.joinToString(",") { it.first }) },
-            "/check-image" bind POST to { request: Request ->
+            "/headers" bind HttpHandler { request: Request -> Response(OK).body(request.headers.joinToString(",") { it.first }) },
+            "/check-image" bind POST to HttpHandler { request: Request ->
                 if (Arrays.equals(testImageBytes(), request.body.payload.array()))
                     Response(OK) else Response(BAD_REQUEST.description("Image content does not match"))
             },
-            "/status/{status}" bind GET to { r: Request ->
+            "/status/{status}" bind GET to HttpHandler { r: Request ->
                 val status = Status(r.path("status")!!.toInt(), "")
                 Response(status).body("body for status ${status.code}")
             })

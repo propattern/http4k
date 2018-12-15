@@ -2,6 +2,7 @@ package org.http4k.format
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -17,7 +18,7 @@ import java.math.BigDecimal
 abstract class GenerateDataClassesContract<NODE : Any>(val j: Json<NODE>) {
 
     @Test
-    fun `generates data classes correctly`() {
+    fun `generates data classes correctly`() = runBlocking {
         val input = j {
             obj(
                 "string" to string("value"),

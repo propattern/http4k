@@ -2,13 +2,14 @@ package org.http4k.contract
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Body
 import org.http4k.core.ContentType
 import org.http4k.core.ContentType.Companion.APPLICATION_FORM_URLENCODED
 import org.http4k.core.ContentType.Companion.APPLICATION_JSON
 import org.http4k.core.ContentType.Companion.APPLICATION_XML
 import org.http4k.core.ContentType.Companion.OCTET_STREAM
-import org.http4k.core.Method
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
 import org.http4k.core.Request
@@ -28,7 +29,7 @@ import org.http4k.lens.ParamMeta.NumberParam
 import org.http4k.lens.ParamMeta.StringParam
 import org.http4k.lens.Path
 import org.http4k.lens.Query
-import org.http4k.lens.Validator
+import org.http4k.lens.Validator.Strict
 import org.http4k.lens.boolean
 import org.http4k.lens.int
 import org.http4k.lens.string
@@ -56,62 +57,62 @@ abstract class ContractRendererContract(private val renderer: ContractRenderer) 
     }
 
     @Test
-    fun `renders as expected`() {
+    fun `renders as expect`() = runBlocking {
         val customBody = Body.json("the body of the message").toLens()
 
         val router = "/basepath" bind contract(renderer, "/", ApiKey(Query.required("the_api_key"), { true }),
-            "/nometa" bindContract GET to { Response(OK) },
+            "/nometa" bindContract GET to HttpHandler { Response(OK) },
             "/descriptions" meta {
                 summary = "endpoint"
                 description = "some rambling description of what this thing actually does"
                 operationId = "echoMessage"
                 tags += Tag("tag3")
                 tags += Tag("tag1")
-            } bindContract GET to { Response(OK) },
-            "/paths" / Path.of("firstName") / "bertrand" / Path.boolean().of("age") bindContract POST to { a, _, _ -> { Response(OK).body(a) } },
+            } bindContract GET to HttpHandler { Response(OK) },
+            "/paths" / Path.of("firstName") / "bertrand" / Path.boolean().of("age") bindContract POST to { a, _, _ -> HttpHandler { Response(OK).body(a) } },
             "/queries" meta {
                 queries += Query.boolean().required("b", "booleanQuery")
                 queries += Query.string().optional("s", "stringQuery")
                 queries += Query.int().optional("i", "intQuery")
                 queries += Query.json().optional("j", "jsonQuery")
-            } bindContract POST to { Response(OK).body("hello") },
+            } bindContract POST to HttpHandler { Response(OK).body("hello") },
             "/headers" meta {
                 headers += Header.boolean().required("b", "booleanHeader")
                 headers += Header.string().optional("s", "stringHeader")
                 headers += Header.int().optional("i", "intHeader")
                 headers += Header.json().optional("j", "jsonHeader")
-            } bindContract POST to { Response(OK).body("hello") },
-            "/body_string" meta { receiving(Body.string(ContentType.TEXT_PLAIN).toLens()) } bindContract POST to { Response(OK) },
+            } bindContract POST to HttpHandler { Response(OK).body("hello") },
+            "/body_string" meta { receiving(Body.string(ContentType.TEXT_PLAIN).toLens()) } bindContract POST to HttpHandler { Response(OK) },
             "/body_json_noschema" meta {
                 receiving(Body.json("json").toLens())
             }
-                bindContract POST to { Response(OK) },
+                bindContract POST to HttpHandler { Response(OK) },
             "/body_json_schema" meta {
                 receiving(Body.json("json").toLens() to Argo { obj("anAnotherObject" to obj("aNumberField" to number(123))) }, "someDefinitionId")
             }
-                bindContract POST to { Response(OK) },
+                bindContract POST to HttpHandler { Response(OK) },
             "/body_form" meta {
-                receiving(Body.webForm(Validator.Strict,
+                receiving(Body.webForm(Strict,
                     FormField.boolean().required("b", "booleanField"),
                     FormField.int().optional("i", "intField"),
                     FormField.string().optional("s", "stringField"),
                     FormField.json().required("j", "jsonField")
                 ).toLens())
-            } bindContract POST to { Response(OK) },
-//            "/body_xml" meta { receiving(Body.xml("json").toLens() to Argo { obj("anAnotherObject" to obj("aNumberField" to number(123))) }) } bindContract GET to { Response(OK) },
+            } bindContract POST to HttpHandler { Response(OK) },
+//            "/body_xml" meta { receiving(Body.xml("json").toLens() to Argo { obj("anAnotherObject" to obj("aNumberField" to number(123))) }) } bindContract GET to HttpHandler { Response(OK) },
             "/produces_and_consumes" meta {
                 produces += APPLICATION_JSON
                 produces += APPLICATION_XML
                 consumes += OCTET_STREAM
                 consumes += APPLICATION_FORM_URLENCODED
-            } bindContract GET to { Response(OK) },
+            } bindContract GET to HttpHandler { Response(OK) },
             "/returning" meta {
                 returning("no way jose" to Response(FORBIDDEN).with(customBody of Argo.obj("aString" to Argo.string("a message of some kind"))))
-            } bindContract POST to { Response(OK) }
+            } bindContract POST to HttpHandler { Response(OK) }
         )
 
         val expected = String(javaClass.getResourceAsStream("${javaClass.simpleName}.json").readBytes())
-        val actual = router(Request(Method.GET, "/basepath?the_api_key=somevalue")).bodyString()
+        val actual = router(Request(GET, "/basepath?the_api_key=somevalue")).bodyString()
 //        ServerFilters.Cors(CorsPolicy.UnsafeGlobalPermissive).then(router).asServer(SunHttp(8000)).start().block()
 //        println(actual)
         assertThat("no match", prettify(actual), equalTo(prettify(expected)))

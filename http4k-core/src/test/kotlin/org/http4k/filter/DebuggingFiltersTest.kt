@@ -2,6 +2,7 @@ package org.http4k.filter
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.containsSubstring
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -17,7 +18,7 @@ import java.io.PrintStream
 class DebuggingFiltersTest {
 
     @Test
-    fun `prints request and response`() {
+    fun `prints request and response`() = runBlocking {
         val os = ByteArrayOutputStream()
         val req = Request(Method.GET, "")
         val resp = Response(OK)
@@ -45,7 +46,7 @@ class DebuggingFiltersTest {
     }
 
     @Test
-    fun `suppresses stream body by default`() {
+    fun `suppresses stream body by default`() = runBlocking {
         val os = ByteArrayOutputStream()
         val req = Request(Method.GET, "").body("anything".byteInputStream())
         val resp = Response(OK).body("anything".byteInputStream())
@@ -57,7 +58,7 @@ class DebuggingFiltersTest {
     }
 
     @Test
-    fun `can print stream body`() {
+    fun `can print stream body`() = runBlocking {
         val os = ByteArrayOutputStream()
         val req = Request(Method.GET, "").body("anything".byteInputStream())
         val resp = Response(OK).body("anything".byteInputStream())

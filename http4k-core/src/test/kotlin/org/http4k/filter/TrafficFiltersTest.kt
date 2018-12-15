@@ -2,6 +2,7 @@ package org.http4k.filter
 
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -16,7 +17,7 @@ class TrafficFiltersTest {
     private val response = Response(Status.OK)
 
     @Test
-    fun `RecordTo stores traffic in underlying storage`() {
+    fun `RecordTo stores traffic in underlying storage`() = runBlocking {
         val stream = ReadWriteStream.Memory()
 
         val handler = TrafficFilters.RecordTo(stream).then { response }
@@ -28,7 +29,7 @@ class TrafficFiltersTest {
     }
 
     @Test
-    fun `ServeCachedFrom serves stored requests later or falls back`() {
+    fun `ServeCachedFrom serves stored requests later or falls back`() = runBlocking {
         val cache = ReadWriteCache.Memory()
         cache[request] = response
         val notFound = Response(Status.NOT_FOUND)

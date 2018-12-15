@@ -3,6 +3,7 @@ package org.http4k.security
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.startsWith
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Credentials
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
@@ -24,7 +25,7 @@ class OAuthProvidersTest {
     private val oAuthPersistence = FakeOAuthPersistence()
 
     @Test
-    fun `configures correctly`() {
+    fun `configures correctly`() = runBlocking {
         assertProvider(OAuthProvider.auth0(uri, client("foo"), credentials, uri, oAuthPersistence), "https://foo/authorize")
         assertProvider(OAuthProvider.dropbox(client("api.dropboxapi.com"), credentials, uri, oAuthPersistence), "https://www.dropbox.com/oauth2/authorize")
         assertProvider(OAuthProvider.gitHub(client("github.com"), credentials, uri, oAuthPersistence), "https://github.com/login/oauth/authorize")
@@ -32,9 +33,9 @@ class OAuthProvidersTest {
         assertProvider(OAuthProvider.google(client("www.googleapis.com"), credentials, uri, oAuthPersistence), "https://accounts.google.com/o/oauth2/v2/auth")
     }
 
-    private fun assertProvider(provider: OAuthProvider, expectedRedirectPrefix: String) {
+    private suspend fun assertProvider(provider: OAuthProvider, expectedRedirectPrefix: String) {
         assertThat(provider.api(Request(GET, "/")), hasStatus(OK))
-        assertThat(provider.authFilter.then { Response(OK) }(Request(GET, "/")),
+        assertThat(provider.authFilter.then(HttpHandler { Response(OK) })(Request(GET, "/")),
             hasStatus(TEMPORARY_REDIRECT).and(hasHeader("Location", startsWith(expectedRedirectPrefix)))
         )
     }

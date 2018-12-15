@@ -1,5 +1,6 @@
 package org.http4k.routing
 
+import org.http4k.core.HttpHandler
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
@@ -11,7 +12,7 @@ class AggregateRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
             TemplateRoutingHttpHandler(
                 method = null,
                 template = UriTemplate.from(validPath),
-                httpHandler = { _: Request -> Response(Status.OK) }
+                httpHandler = HttpHandler { _: Request -> Response(Status.OK) }
             )
         )
 }

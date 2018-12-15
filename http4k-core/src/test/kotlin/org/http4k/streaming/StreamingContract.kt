@@ -2,6 +2,7 @@ package org.http4k.streaming
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
@@ -42,8 +43,8 @@ abstract class StreamingContract(private val config: StreamingTestConfiguration 
     private var countdown: CountDownLatch = CountDownLatch(config.beeps * 2)
 
     val server = routes(
-        "/stream-response" bind GET to { _: Request -> Response(Status.OK).body(beeper()) },
-        "/stream-request" bind POST to { request: Request ->
+        "/stream-response" bind GET to HttpHandler { _: Request -> Response(Status.OK).body(beeper()) },
+        "/stream-request" bind POST to HttpHandler { request: Request ->
             captureReceivedStream { request.body.stream }; Response(Status.OK)
         }
     )
@@ -60,7 +61,7 @@ abstract class StreamingContract(private val config: StreamingTestConfiguration 
     }
 
     @Test
-    fun `can stream response`() {
+    fun `can stream response`() = runBlocking {
         captureReceivedStream { createClient()(Request(GET, "http://localhost:$port/stream-response")).body.stream }
 
         waitForCompletion()
@@ -69,7 +70,7 @@ abstract class StreamingContract(private val config: StreamingTestConfiguration 
     }
 
     @Test
-    fun `can stream request`() {
+    fun `can stream request`() = runBlocking {
         createClient()(Request(POST, "http://localhost:$port/stream-request").body(beeper()))
 
         waitForCompletion()
@@ -86,7 +87,7 @@ abstract class StreamingContract(private val config: StreamingTestConfiguration 
         if (!succeeded) fail("Timed out waiting for server response")
     }
 
-    private fun captureReceivedStream(streamSource: () -> InputStream) {
+    private suspend fun captureReceivedStream(streamSource: suspend () -> InputStream) {
         val responseStream = streamSource()
 
         responseStream.bufferedReader().forEachLine {

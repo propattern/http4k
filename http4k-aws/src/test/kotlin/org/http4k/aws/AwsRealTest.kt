@@ -3,6 +3,7 @@ package org.http4k.aws
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.containsSubstring
 import com.natpryce.hamkrest.equalTo
+import kotlinx.coroutines.runBlocking
 import org.http4k.client.JavaHttpClient
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.DELETE
@@ -23,21 +24,21 @@ class AwsRealTest : AbstractAwsRealS3TestCase() {
     }
 
     @Test
-    fun `default usage`() {
+    fun `default usage`() = runBlocking {
         val client = awsClientFilter(Payload.Mode.Signed)
             .then(JavaHttpClient())
-        bucketLifecycle((client))
+        bucketLifecycle(client)
     }
 
     @Test
-    fun `streaming`() {
+    fun `streaming`() = runBlocking {
         val client = awsClientFilter(Payload.Mode.Unsigned)
             .then(JavaHttpClient())
 
-        bucketLifecycle((client))
+        bucketLifecycle(client)
     }
 
-    private fun bucketLifecycle(client: HttpHandler) {
+    private suspend fun bucketLifecycle(client: HttpHandler) {
         val contentOriginal = UUID.randomUUID().toString()
         val contents = contentOriginal.byteInputStream()
 

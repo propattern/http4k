@@ -3,7 +3,8 @@ package org.http4k.webdriver
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.hasElement
-import org.http4k.core.Method
+import org.http4k.core.HttpHandler
+import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.OK
@@ -26,13 +27,13 @@ class RedirectTest {
     private var cookiesSentToFinalDestination = listOf<HCookie>()
 
     private val redirectingHandler = routes(
-        finalUrl bind Method.GET to { req: Request ->
+        finalUrl bind GET to HttpHandler { req: Request ->
             {
                 cookiesSentToFinalDestination = req.cookies()
                 Response(OK).body("You made it!")
             }()
         },
-        startingUrl bind Method.GET to { _: Request ->
+        startingUrl bind GET to HttpHandler {
             Response(SEE_OTHER)
                 .header("Location", finalUrl)
                 .cookie(org.http4k.core.cookie.Cookie(cookieKey, cookieValue))

@@ -2,11 +2,13 @@ package org.http4k.chaos
 
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 import org.http4k.chaos.ChaosBehaviours.ReturnStatus
 import org.http4k.chaos.ChaosStages.Wait
 import org.http4k.chaos.ChaosTriggers.Always
 import org.http4k.contract.ApiKey
 import org.http4k.contract.NoSecurity
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
 import org.http4k.core.Request
@@ -30,8 +32,8 @@ class ChaosControlsTest {
     private val customChaos = """{"chaos":"Always ReturnStatus (418)"}"""
 
     @Test
-    fun `can convert a normal app to be chaotic`() {
-        val app = routes("/" bind GET to { Response(OK) })
+    fun `can convert a normal app to be chaotic`() = runBlocking {
+        val app = routes("/" bind GET to HttpHandler { Response(OK) })
 
         val appWithChaos = app.withChaosControls(ReturnStatus(NOT_FOUND).appliedWhen(Always))
 
@@ -62,8 +64,8 @@ class ChaosControlsTest {
     }
 
     @Test
-    fun `can configure chaos controls`() {
-        val app = routes("/" bind GET to { Response(OK) })
+    fun `can configure chaos controls`() = runBlocking {
+        val app = routes("/" bind GET to HttpHandler { Response(OK) })
 
         val appWithChaos = app.withChaosControls(
             Wait,
@@ -76,8 +78,8 @@ class ChaosControlsTest {
     }
 
     @Test
-    fun `combines with other route blocks`() {
-        val app = routes("/{bib}/{bar}" bind GET to { Response(I_M_A_TEAPOT).body(it.path("bib")!! + it.path("bar")!!) })
+    fun `combines with other route blocks`() = runBlocking {
+        val app = routes("/{bib}/{bar}" bind GET to HttpHandler { Response(I_M_A_TEAPOT).body(it.path("bib")!! + it.path("bar")!!) })
 
         val appWithChaos = app.withChaosControls(
             Wait,

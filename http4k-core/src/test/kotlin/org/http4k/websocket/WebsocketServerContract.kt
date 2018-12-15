@@ -2,6 +2,7 @@ package org.http4k.websocket
 
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 import org.http4k.client.WebsocketClient
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
@@ -37,7 +38,7 @@ abstract class WebsocketServerContract(private val serverConfig: (Int) -> WsServ
     @BeforeEach
     fun before() {
         val routes = routes(
-            "/hello/{name}" bind { r: Request -> Response(OK).body(r.path("name")!!) }
+            "/hello/{name}" bind HttpHandler { r: Request -> Response(OK).body(r.path("name")!!) }
         )
         val ws = websockets(
             "/hello" bind websockets(
@@ -72,7 +73,7 @@ abstract class WebsocketServerContract(private val serverConfig: (Int) -> WsServ
     }
 
     @Test
-    fun `can do standard http traffic`() {
+    fun `can do standard http traffic`() = runBlocking {
         client(Request(GET, "http://localhost:$port/hello/bob")) shouldMatch hasBody("bob")
     }
 

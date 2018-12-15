@@ -4,6 +4,7 @@ import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 import org.http4k.asByteBuffer
 import org.http4k.core.Body
 import org.http4k.core.ContentType
@@ -44,26 +45,26 @@ abstract class ServerContract(private val serverConfig: (Int) -> ServerConfig, p
 
     private val routes =
         requiredMethods.map {
-            "/" + it.name bind it to { _: Request -> Response(OK).body(it.name) }
+            "/" + it.name bind it to HttpHandler { _: Request -> Response(OK).body(it.name) }
         }.plus(listOf(
-            "/headers" bind GET to { _: Request ->
+            "/headers" bind GET to HttpHandler { _: Request ->
                 Response(ACCEPTED)
                     .header("content-type", "text/plain")
             },
-            "/large" bind GET to { Response(OK).body((0..size).map { '.' }.joinToString("")) },
-            "/large" bind POST to { Response(OK).body((0..size).map { '.' }.joinToString("")) },
-            "/stream" bind GET to { Response(OK).with(Body.binary(ContentType.TEXT_PLAIN).toLens() of Body("hello".asByteBuffer())) },
-            "/presetlength" bind GET to { Response(OK).header("Content-Length", "0") },
-            "/echo" bind POST to { req: Request -> Response(OK).body(req.bodyString()) },
-            "/request-headers" bind GET to { request: Request -> Response(OK).body(request.headerValues("foo").joinToString(", ")) },
-            "/length" bind { req: Request ->
+            "/large" bind GET to HttpHandler { Response(OK).body((0..size).map { '.' }.joinToString("")) },
+            "/large" bind POST to HttpHandler { Response(OK).body((0..size).map { '.' }.joinToString("")) },
+            "/stream" bind GET to HttpHandler { Response(OK).with(Body.binary(ContentType.TEXT_PLAIN).toLens() of Body("hello".asByteBuffer())) },
+            "/presetlength" bind GET to HttpHandler { Response(OK).header("Content-Length", "0") },
+            "/echo" bind POST to HttpHandler { req: Request -> Response(OK).body(req.bodyString()) },
+            "/request-headers" bind GET to HttpHandler { request: Request -> Response(OK).body(request.headerValues("foo").joinToString(", ")) },
+            "/length" bind HttpHandler { req: Request ->
                 when (req.body) {
                     is StreamBody -> Response(OK).body(req.body.length.toString())
                     else -> Response(INTERNAL_SERVER_ERROR)
                 }
             },
-            "/uri" bind GET to { req: Request -> Response(OK).body(req.uri.toString()) },
-            "/boom" bind GET to { _: Request -> throw IllegalArgumentException("BOOM!") }
+            "/uri" bind GET to HttpHandler { req: Request -> Response(OK).body(req.uri.toString()) },
+            "/boom" bind GET to HttpHandler { _: Request -> throw IllegalArgumentException("BOOM!") }
         ))
 
     @BeforeEach
@@ -72,7 +73,7 @@ abstract class ServerContract(private val serverConfig: (Int) -> ServerConfig, p
     }
 
     @Test
-    fun `can call an endpoint with all supported Methods`() {
+    fun `can call an endpoint with all supported Methods`() = runBlocking {
         for (method in requiredMethods) {
 
             val response = client(Request(method, "http://localhost:$port/" + method.name))
@@ -84,7 +85,7 @@ abstract class ServerContract(private val serverConfig: (Int) -> ServerConfig, p
     }
 
     @Test
-    open fun `can return a large body - GET`() {
+    open fun `can return a large body - GET`() = runBlocking {
         val response = client(Request(GET, "http://localhost:$port/large").body("hello mum"))
 
         assertThat(response.status, equalTo(OK))
@@ -92,7 +93,7 @@ abstract class ServerContract(private val serverConfig: (Int) -> ServerConfig, p
     }
 
     @Test
-    open fun `can return a large body - POST`() {
+    open fun `can return a large body - POST`() = runBlocking {
         val response = client(Request(POST, "http://localhost:$port/large").body("hello mum"))
 
         assertThat(response.status, equalTo(OK))
@@ -100,7 +101,7 @@ abstract class ServerContract(private val serverConfig: (Int) -> ServerConfig, p
     }
 
     @Test
-    fun `gets the body from the request`() {
+    fun `gets the body from the request`() = runBlocking {
         val response = client(Request(POST, "http://localhost:$port/echo").body("hello mum"))
 
         assertThat(response.status, equalTo(OK))
@@ -108,7 +109,7 @@ abstract class ServerContract(private val serverConfig: (Int) -> ServerConfig, p
     }
 
     @Test
-    fun `returns headers`() {
+    fun `returns headers`() = runBlocking {
         val response = client(Request(GET, "http://localhost:$port/headers"))
 
         assertThat(response.status, equalTo(ACCEPTED))
@@ -116,20 +117,20 @@ abstract class ServerContract(private val serverConfig: (Int) -> ServerConfig, p
     }
 
     @Test
-    fun `length is set on body if it is sent`() {
+    fun `length is set on body if it is sent`() = runBlocking {
         val response = client(Request(POST, "http://localhost:$port/length")
             .body("12345").header("Content-Length", "5"))
         response shouldMatch hasStatus(OK).and(hasBody("5"))
     }
 
     @Test
-    fun `length is ignored on body if it not well formed`() {
+    fun `length is ignored on body if it not well formed`() = runBlocking {
         val response = client(Request(POST, "http://localhost:$port/length").header("Content-Length", "nonsense").body("12345"))
         response shouldMatch hasStatus(OK).and(hasBody("5"))
     }
 
     @Test
-    fun `gets the uri from the request`() {
+    fun `gets the uri from the request`() = runBlocking {
         val response = client(Request(GET, "http://localhost:$port/uri?bob=bill"))
 
         assertThat(response.status, equalTo(OK))
@@ -137,14 +138,14 @@ abstract class ServerContract(private val serverConfig: (Int) -> ServerConfig, p
     }
 
     @Test
-    fun `endpoint that blows up results in 500`() {
+    fun `endpoint that blows up results in 500`() = runBlocking {
         val response = client(Request(GET, "http://localhost:$port/boom"))
 
         assertThat(response.status, equalTo(INTERNAL_SERVER_ERROR))
     }
 
     @Test
-    fun `can handle multiple request headers`() {
+    fun `can handle multiple request headers`() = runBlocking {
         val response = client(Request(GET, "http://localhost:$port/request-headers").header("foo", "one").header("foo", "two").header("foo", "three"))
 
         assertThat(response.status, equalTo(OK))
@@ -152,7 +153,7 @@ abstract class ServerContract(private val serverConfig: (Int) -> ServerConfig, p
     }
 
     @Test
-    fun `deals with streaming response`() {
+    fun `deals with streaming response`() = runBlocking {
         val response = client(Request(GET, "http://localhost:$port/stream"))
 
         assertThat(response.status, equalTo(OK))
@@ -160,14 +161,14 @@ abstract class ServerContract(private val serverConfig: (Int) -> ServerConfig, p
     }
 
     @Test
-    fun `ok when length already set`() {
+    fun `ok when length already set`() = runBlocking {
         val response = client(Request(GET, "http://localhost:$port/presetlength"))
         assertThat(response.status, equalTo(OK))
         assertThat(response.header("content-length"), equalTo("0"))
     }
 
     @Test
-    fun `can start on port zero and then get the port`() {
+    fun `can start on port zero and then get the port`() = runBlocking {
         routes(*routes.toTypedArray()).asServer(serverConfig(0)).start().use {
             assertThat(client(Request(GET, "http://localhost:${it.port()}/uri")).status, equalTo(OK))
         }

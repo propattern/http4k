@@ -2,6 +2,7 @@ package org.http4k.contract
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Request
@@ -15,7 +16,7 @@ import org.junit.jupiter.api.Test
 class SecurityTest {
 
     @Test
-    fun `valid API key is granted access and result carried through`() {
+    fun `valid API key is granted access and result carried through`() = runBlocking {
         val param = Query.int().required("name")
         val next = HttpHandler { Response(OK).body("hello") }
 
@@ -26,7 +27,7 @@ class SecurityTest {
     }
 
     @Test
-    fun `OPTIONS request is granted access even with no API key if toggled off`() {
+    fun `OPTIONS request is granted access even with no API key if toggled off`() = runBlocking {
         val param = Query.int().required("name")
         val next = HttpHandler { Response(OK).body("hello") }
 
@@ -37,7 +38,7 @@ class SecurityTest {
     }
 
     @Test
-    fun `missing API key is unauthorized`() {
+    fun `missing API key is unauthorized`() = runBlocking {
         val param = Query.int().required("name")
         val next = HttpHandler { Response(OK).body("hello") }
 
@@ -47,7 +48,7 @@ class SecurityTest {
     }
 
     @Test
-    fun `bad API key is unauthorized`() {
+    fun `bad API key is unauthorized`() = runBlocking {
         val param = Query.int().required("name")
         val next = HttpHandler { Response(OK).body("hello") }
 
@@ -57,7 +58,7 @@ class SecurityTest {
     }
 
     @Test
-    fun `unknown API key is unauthorized`() {
+    fun `unknown API key is unauthorized`() = runBlocking {
         val param = Query.int().required("name")
         val next = HttpHandler { Response(OK).body("hello") }
 
@@ -67,8 +68,8 @@ class SecurityTest {
     }
 
     @Test
-    fun `no security is rather lax`() {
-        val response = (NoSecurity.filter({ Response(OK).body("hello") }))(Request(Method.GET, ""))
+    fun `no security is rather lax`() = runBlocking {
+        val response = (NoSecurity.filter(HttpHandler { Response(OK).body("hello") }))(Request(Method.GET, ""))
 
         assertThat(response.status, equalTo(OK))
         assertThat(response.bodyString(), equalTo("hello"))

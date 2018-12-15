@@ -2,6 +2,7 @@ package org.http4k.traffic
 
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -17,7 +18,7 @@ class ResponderTest {
     private val response = Response(Status.OK)
 
     @Test
-    fun `Responder from Source replays stored responses or falls back to Service Unavailable`() {
+    fun `Responder from Source replays stored responses or falls back to Service Unavailable`() = runBlocking {
         val cache = ReadWriteCache.Memory()
         cache[request] = response
 
@@ -27,7 +28,7 @@ class ResponderTest {
     }
 
     @Test
-    fun `Responder from Replay replays stored responses or falls back to Service Unavailable`() {
+    fun `Responder from Replay replays stored responses or falls back to Service Unavailable`() = runBlocking {
         val stream = ReadWriteStream.Memory()
         stream[request] = response
         stream[request2] = response

@@ -2,10 +2,11 @@ package org.http4k.filter
 
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 import org.http4k.ProcessFiles
 import org.http4k.core.ContentType
 import org.http4k.core.FormFile
-import org.http4k.core.Method
+import org.http4k.core.Method.POST
 import org.http4k.core.MultipartFormBody
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -19,12 +20,12 @@ import org.junit.jupiter.api.Test
 class FiltersTest {
 
     @Test
-    fun `process files filter and convert form from multipart webform`() {
+    fun `process files filter and convert form from multipart webform`() = runBlocking {
         val form = MultipartFormBody("bob") + ("field" to "bar") +
             ("file" to FormFile("foo.txt", ContentType.TEXT_PLAIN, "content".byteInputStream())) +
             ("field" to "bar")
 
-        val req = Request(Method.POST, "")
+        val req = Request(POST, "")
             .with(Header.CONTENT_TYPE of ContentType.MultipartFormWithBoundary(form.boundary))
             .body(form)
 

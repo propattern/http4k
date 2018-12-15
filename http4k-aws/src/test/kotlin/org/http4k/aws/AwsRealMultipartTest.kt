@@ -3,8 +3,9 @@ package org.http4k.aws
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.containsSubstring
 import com.natpryce.hamkrest.equalTo
+import kotlinx.coroutines.runBlocking
 import org.http4k.client.ApacheClient
-import org.http4k.core.BodyMode
+import org.http4k.core.BodyMode.Memory
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.DELETE
 import org.http4k.core.Method.GET
@@ -14,19 +15,19 @@ import org.http4k.core.Request
 import org.http4k.core.Status
 import org.http4k.core.query
 import org.http4k.core.then
-import org.http4k.filter.Payload
+import org.http4k.filter.Payload.Mode.Signed
 import org.junit.jupiter.api.Test
 
 class AwsRealMultipartTest : AbstractAwsRealS3TestCase() {
 
     @Test
-    fun `default usage`() {
-        val client = awsClientFilter(Payload.Mode.Signed)
-            .then(ApacheClient(requestBodyMode = BodyMode.Memory))
+    fun `default usage`() = runBlocking {
+        val client = awsClientFilter(Signed)
+            .then(ApacheClient(requestBodyMode = Memory))
         bucketLifecycle((client))
     }
 
-    private fun bucketLifecycle(client: HttpHandler) {
+    private suspend fun bucketLifecycle(client: HttpHandler) {
         val contentOriginal = (1..5 * 1024 * 1024).map { 'a' }.joinToString("")
 
         assertThat(

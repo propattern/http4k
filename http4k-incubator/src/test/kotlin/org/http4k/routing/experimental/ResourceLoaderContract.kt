@@ -3,6 +3,7 @@ package org.http4k.routing.experimental
 import com.natpryce.hamkrest.absent
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.or
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.ContentType
 import org.http4k.core.ContentType.Companion.APPLICATION_XML
 import org.http4k.core.ContentType.Companion.TEXT_HTML
@@ -17,33 +18,33 @@ import org.junit.jupiter.api.Test
 abstract class ResourceLoaderContract(private val loader: Router) {
 
     @Test
-    fun `loads existing file`() {
+    fun `loads existing file`() = runBlocking {
         checkContents("mybob.xml", "<xml>content</xml>", APPLICATION_XML)
     }
 
     @Test
-    fun `loads root index file`() {
+    fun `loads root index file`() = runBlocking {
         checkContents("", "hello from the root index.html", TEXT_HTML)
         checkContents("/", "hello from the root index.html", TEXT_HTML)
     }
 
     @Test
-    open fun `loads embedded index file`() {
+    open fun `loads embedded index file`() = runBlocking {
         checkContents("org", "hello from the io index.html", TEXT_HTML)
         checkContents("org/", "hello from the io index.html", TEXT_HTML)
     }
 
     @Test
-    fun `loads existing child file`() {
+    fun `loads existing child file`() = runBlocking {
         checkContents("org/index.html", "hello from the io index.html", TEXT_HTML)
     }
 
     @Test
-    fun `missing file`() {
+    fun `missing file`() = runBlocking {
         checkContents("notAFile", null, TEXT_HTML)
     }
 
-    protected fun checkContents(path: String, expected: String?, expectedContentType: ContentType) {
+    protected suspend fun checkContents(path: String, expected: String?, expectedContentType: ContentType) {
         val request = Request(Method.GET, of(path))
         if (expected == null)
             assertThat(loader.match(request), absent())

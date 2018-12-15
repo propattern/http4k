@@ -4,6 +4,7 @@ import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 import org.http4k.chaos.ChaosBehaviours.ReturnStatus
 import org.http4k.chaos.ChaosTriggers.Always
 import org.http4k.chaos.ChaosTriggers.Countdown
@@ -157,7 +158,7 @@ class AlwaysTest : ChaosTriggerContract() {
     override val expectedDescription = "Always"
 
     @Test
-    fun `Always applies by default`() {
+    fun `Always applies by defaul`() = runBlocking {
         val http = ReturnStatus(INTERNAL_SERVER_ERROR).appliedWhen(Always).asFilter().then { Response(OK) }
         http(Request(GET, "/foo")) shouldMatch hasStatus(INTERNAL_SERVER_ERROR).and(hasBody("")).and(hasHeader("x-http4k-chaos", "Status 500"))
     }
@@ -175,7 +176,7 @@ class PercentageBasedTest : ChaosTriggerContract() {
     }
 
     @Test
-    fun `PercentageBased applied`() {
+    fun `PercentageBased applied`() = runBlocking {
         val http = ReturnStatus(INTERNAL_SERVER_ERROR).appliedWhen(PercentageBased(100)).asFilter().then { Response(OK) }
         http(Request(GET, "/foo")) shouldMatch hasStatus(INTERNAL_SERVER_ERROR).and(hasBody("")).and(hasHeader("x-http4k-chaos", "Status 500"))
     }
@@ -187,7 +188,7 @@ class OnceTest : ChaosTriggerContract() {
     override val expectedDescription = "Once (trigger = Deadline (1970-01-01T00:00:00Z))"
 
     @Test
-    fun `Once only fires once`() {
+    fun `Once only fires once`() = runBlocking {
         val http = ReturnStatus(INTERNAL_SERVER_ERROR).appliedWhen(Once { it.method == GET }).asFilter().then { Response(Status.OK) }
         http(Request(POST, "/foo")) shouldMatch hasStatus(OK)
         http(Request(GET, "/foo")) shouldMatch hasStatus(INTERNAL_SERVER_ERROR)
@@ -199,7 +200,7 @@ class OnceTest : ChaosTriggerContract() {
 class ChaosPolicyOperationTest {
 
     @Test
-    fun `Until stops a behaviour when triggered`() {
+    fun `Until stops a behaviour when triggered`() = runBlocking {
         val stage: Stage = ReturnStatus(INTERNAL_SERVER_ERROR).appliedWhen(Always).until { it.method == POST }
         stage.toString() shouldMatch equalTo("Always ReturnStatus (500) until (org.http4k.core.Request) -> kotlin.Boolean")
 

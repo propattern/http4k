@@ -3,7 +3,9 @@ package org.http4k.security
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Credentials
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -35,7 +37,7 @@ class OAuthProviderTest {
 
     private fun oAuth(persistence: OAuthPersistence, status: Status = OK): OAuthProvider = OAuthProvider(
         providerConfig,
-        { Response(status).body("access token goes here") },
+        HttpHandler { Response(status).body("access token goes here") },
         Uri.of("http://callbackHost/callback"),
         listOf("scope1", "scope2"),
         persistence,
@@ -44,14 +46,14 @@ class OAuthProviderTest {
     )
 
     @Test
-    fun `filter - when accessToken value is present, request is let through`() {
+    fun `filter - when accessToken value is present, request is let through`() = runBlocking {
         oAuthPersistence.assignToken(Request(GET, ""), Response(OK), AccessTokenContainer("randomToken"))
-        oAuth(oAuthPersistence).authFilter.then { Response(OK).body("i am witorious!") }(Request(GET, "/")) shouldMatch
+        oAuth(oAuthPersistence).authFilter.then(HttpHandler { Response(OK).body("i am witorious!") })(Request(GET, "/")) shouldMatch
             hasStatus(OK).and(hasBody("i am witorious!"))
     }
 
     @Test
-    fun `filter - when no accessToken value present, request is redirected to expected location`() {
+    fun `filter - when no accessToken value present, request is redirected to expected location`() = runBlocking {
         val expectedHeader = """http://authHost/auth?client_id=user&response_type=code&scope=scope1+scope2&redirect_uri=http%3A%2F%2FcallbackHost%2Fcallback&state=csrf%3DrandomCsrf%26uri%3D%252F&nonce=randomNonce"""
         Request(GET, "/")
         oAuth(oAuthPersistence).authFilter.then { Response(OK) }(Request(GET, "/")) shouldMatch hasStatus(TEMPORARY_REDIRECT).and(hasHeader("Location", expectedHeader))
@@ -64,7 +66,7 @@ class OAuthProviderTest {
     private val withCodeAndValidStateButNoUrl = withCode.query("state", listOf("csrf" to "randomCsrf").toUrlFormEncoded())
 
     @Test
-    fun `callback - when invalid inputs passed, we get forbidden with cookie invalidation`() {
+    fun `callback - when invalid inputs passed, we get forbidden with cookie invalidation`() = runBlocking {
         val invalidation = Response(FORBIDDEN)
 
         oAuth(oAuthPersistence).callback(base) shouldMatch equalTo(invalidation)
@@ -82,7 +84,7 @@ class OAuthProviderTest {
     }
 
     @Test
-    fun `callback - when valid inputs passed, defaults to root`() {
+    fun `callback - when valid inputs passed, defaults to root`() = runBlocking {
 
         oAuthPersistence.assignCsrf(Response(OK), CrossSiteRequestForgeryToken("randomCsrf"))
 

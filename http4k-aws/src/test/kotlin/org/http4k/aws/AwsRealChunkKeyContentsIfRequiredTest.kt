@@ -3,6 +3,7 @@ package org.http4k.aws
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.containsSubstring
 import com.natpryce.hamkrest.equalTo
+import kotlinx.coroutines.runBlocking
 import org.http4k.client.ApacheClient
 import org.http4k.core.BodyMode
 import org.http4k.core.HttpHandler
@@ -22,7 +23,7 @@ import org.junit.jupiter.api.Test
 class AwsRealChunkKeyContentsIfRequiredTest : AbstractAwsRealS3TestCase() {
 
     @Test
-    fun `default usage`() {
+    fun `default usage`() = runBlocking {
         val requestBodyMode = BodyMode.Memory
         bucketLifecycle(ClientFilters.ChunkKeyContentsIfRequired(requestBodyMode = requestBodyMode)
             .then(awsClientFilter(Payload.Mode.Signed))
@@ -32,7 +33,7 @@ class AwsRealChunkKeyContentsIfRequiredTest : AbstractAwsRealS3TestCase() {
 
     @Test
     @Disabled
-    fun `streaming usage`() {
+    fun `streaming usage`() = runBlocking {
         val requestBodyMode = BodyMode.Stream
         bucketLifecycle(ClientFilters.ChunkKeyContentsIfRequired(requestBodyMode = requestBodyMode)
             .then(awsClientFilter(Payload.Mode.Unsigned))
@@ -40,7 +41,7 @@ class AwsRealChunkKeyContentsIfRequiredTest : AbstractAwsRealS3TestCase() {
             .then(ApacheClient(requestBodyMode = requestBodyMode)))
     }
 
-    private fun bucketLifecycle(client: HttpHandler) {
+    private suspend fun bucketLifecycle(client: HttpHandler) {
         val aClient = aClient()
 
         val contentOriginal = (1..10 * 1024 * 1024).map { 'a' }.joinToString("")

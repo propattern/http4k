@@ -2,6 +2,7 @@ package org.http4k.routing
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.junit.jupiter.api.Test
@@ -10,7 +11,7 @@ class Issue57Test {
     private val resourceLoader = ResourceLoader.Classpath()
 
     @Test
-    fun `a`() {
+    fun `a`() = runBlocking {
         val routes = routes(
             "/path1" bind static(resourceLoader),
             "/path2" bind static(resourceLoader)
@@ -21,7 +22,7 @@ class Issue57Test {
     }
 
     @Test
-    fun `b`() {
+    fun `b`() = runBlocking {
         val routes = routes(
             "/path1" bind GET to static(resourceLoader),
             "/path2" bind static(resourceLoader)
@@ -32,7 +33,7 @@ class Issue57Test {
     }
 
     @Test
-    fun `c`() {
+    fun `c`() = runBlocking {
         val routes = routes(
             "/path1" bind static(resourceLoader),
             "/path2" bind GET to static(resourceLoader)
@@ -43,7 +44,7 @@ class Issue57Test {
     }
 
     @Test
-    fun `d`() {
+    fun `d`() = runBlocking {
         val routes = routes(
             "/path1" bind GET to static(resourceLoader),
             "/path2" bind GET to static(resourceLoader)

@@ -2,6 +2,7 @@ package org.http4k.aws
 
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.equalTo
+import kotlinx.coroutines.runBlocking
 import org.http4k.client.ApacheClient
 import org.http4k.core.Method.DELETE
 import org.http4k.core.Request
@@ -48,7 +49,7 @@ abstract class AbstractAwsRealS3TestCase {
     }
 
     @AfterEach
-    fun removeBucket() {
+    fun removeBucket() = runBlocking {
         aClient()(Request(DELETE, bucketUrl))
     }
 

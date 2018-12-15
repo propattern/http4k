@@ -2,7 +2,9 @@ package org.http4k.routing
 
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Filter
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Status.Companion.NOT_FOUND
@@ -20,47 +22,47 @@ abstract class RoutingHttpHandlerContract {
     abstract val handler: RoutingHttpHandler
 
     @Test
-    fun `matches a particular route`() {
+    fun `matches a particular route`() = runBlocking {
         assertThat(handler(Request(GET, validPath)), hasStatus(OK))
     }
 
     @Test
-    fun `does not match a particular route`() {
+    fun `does not match a particular route`() = runBlocking {
         assertThat(handler(Request(GET, "/not-found")), hasStatus(NOT_FOUND))
     }
 
     @Test
-    fun `with filter - applies to matching handler`() {
+    fun `with filter - applies to matching handler`() = runBlocking {
         val filtered = handler.withFilter(filterAppending("bar"))
         assertThat(filtered(Request(GET, validPath)), hasStatus(OK) and hasHeader("res-header", "bar"))
     }
 
     @Test
-    open fun `with filter - applies when not found`() {
+    open fun `with filter - applies when not found`() = runBlocking {
         val filtered = handler.withFilter(filterAppending("foo"))
         assertThat(filtered(Request(GET, "/not-found")), hasStatus(NOT_FOUND) and hasHeader("res-header", "foo"))
     }
 
     @Test
-    open fun `with filter - applies in correct order`() {
+    open fun `with filter - applies in correct order`() = runBlocking {
         val filtered = handler.withFilter(filterAppending("foo")).withFilter(filterAppending("bar"))
         assertThat(filtered(Request(GET, "/not-found")), hasStatus(NOT_FOUND) and hasHeader("res-header", "foobar"))
     }
 
     @Test
-    fun `with base path - matches`() {
+    fun `with base path - matches`() = runBlocking {
         val withBase = handler.withBasePath(prefix)
         assertThat(withBase(Request(GET, "$prefix$validPath")), hasStatus(OK))
     }
 
     @Test
-    fun `with base path - no longer matches original`() {
+    fun `with base path - no longer matches original`() = runBlocking {
         val withBase = handler.withBasePath(prefix)
         assertThat(withBase(Request(GET, validPath)), hasStatus(NOT_FOUND))
     }
 
     @Test
-    fun `with base path - multiple levels`() {
+    fun `with base path - multiple levels`() = runBlocking {
         val withBase = handler.withBasePath(prefix).withBasePath(prePrefix)
         assertThat(withBase(Request(GET, "$prePrefix$prefix$validPath")), hasStatus(OK))
     }

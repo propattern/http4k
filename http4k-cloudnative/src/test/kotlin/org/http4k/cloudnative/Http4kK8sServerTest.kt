@@ -1,6 +1,7 @@
 package org.http4k.cloudnative
 
 import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 import org.http4k.client.JavaHttpClient
 import org.http4k.cloudnative.env.Environment
 import org.http4k.cloudnative.env.EnvironmentKey.k8s.HEALTH_PORT
@@ -37,12 +38,12 @@ class Http4kK8sServerTest {
     private val client = JavaHttpClient()
 
     @Test
-    fun `app is available on port`() {
+    fun `app is available on port`() = runBlocking {
         client(Request(GET, "http://localhost:${server.port()}")) shouldMatch hasStatus(I_M_A_TEAPOT)
     }
 
     @Test
-    fun `health is available`() {
+    fun `health is available`() = runBlocking {
         client(Request(GET, "http://localhost:${server.healthPort()}/liveness")) shouldMatch hasStatus(OK)
         client(Request(GET, "http://localhost:${server.healthPort()}/readiness")) shouldMatch hasStatus(OK)
     }

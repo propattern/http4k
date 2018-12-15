@@ -28,13 +28,13 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class AnswerRecorder(private val httpClient: HttpHandler) : (Int) -> Unit {
-    override fun invoke(answer: Int) {
+class AnswerRecorder(private val httpClient: HttpHandler) {
+    suspend fun invoke(answer: Int) {
         httpClient(Request(POST, "/" + answer.toString()))
     }
 }
 
-fun myMathsEndpoint(fn: (Int, Int) -> Int, recorder: (Int) -> Unit) = HttpHandler { req ->
+fun myMathsEndpoint(fn: (Int, Int) -> Int, recorder: suspend (Int) -> Unit) = HttpHandler { req ->
     val answer = fn(req.query("first")!!.toInt(), req.query("second")!!.toInt())
     recorder(answer)
     Response(OK).body("the answer is $answer")
@@ -53,7 +53,7 @@ class EndpointUnitTest {
 
 fun MyMathsApp(recorderHttp: HttpHandler) =
     ServerFilters.CatchAll().then(routes(
-        "/add" bind GET to myMathsEndpoint({ first, second -> first + second }, AnswerRecorder(recorderHttp))
+        "/add" bind GET to myMathsEndpoint({ first, second -> first + second }, AnswerRecorder(recorderHttp)::invoke)
     ))
 
 class FakeRecorderHttp : HttpHandler {
@@ -72,7 +72,7 @@ class FunctionalTest {
     private val app = MyMathsApp(recorderHttp)
 
     @Test
-    fun `adds numbers`() {
+    fun `adds numbers`() = runBlocking {
         val response = app(Request(GET, "/add").query("first", "123").query("second", "456"))
         response shouldMatch hasStatus(OK).and(hasBody("the answer is 579"))
         recorderHttp.calls shouldMatch equalTo(listOf(579))

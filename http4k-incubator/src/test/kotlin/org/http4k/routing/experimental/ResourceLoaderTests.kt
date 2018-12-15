@@ -1,5 +1,6 @@
 package org.http4k.routing.experimental
 
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.ContentType
 import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.Test
@@ -7,7 +8,7 @@ import org.junit.jupiter.api.Test
 class DirectoryResourceLoaderTest : ResourceLoaderContract(ResourceLoaders.Directory("./src/test/resources")) {
 
     @Test
-    fun `does not list directory`() {
+    fun `does not list director`() = runBlocking {
         checkContents("org/http4k/routing", null, ContentType.TEXT_HTML)
     }
 }
@@ -15,7 +16,7 @@ class DirectoryResourceLoaderTest : ResourceLoaderContract(ResourceLoaders.Direc
 class ListingDirectoryResourceLoaderTest : ResourceLoaderContract(ResourceLoaders.ListingDirectory("./src/test/resources")) {
 
     @Test
-    fun `lists directory`() {
+    fun `lists director`() = runBlocking {
         @Language("HTML") val expected = """
         <html>
         <body>
