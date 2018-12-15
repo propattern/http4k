@@ -3,6 +3,7 @@ package guide.example._3_adding_the_second_endpoint
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.should.shouldMatch
 import guide.example._3_adding_the_second_endpoint.Matchers.answerShouldBe
+import kotlinx.coroutines.runBlocking
 import org.http4k.client.OkHttp
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
@@ -39,7 +40,7 @@ class EndToEndTest {
     }
 
     @Test
-    fun `all endpoints are mounted correctly`() {
+    fun `all endpoints are mounted correctly`() = runBlocking {
         client(Request(GET, "http://localhost:$port/ping")) shouldMatch hasStatus(OK)
         client(Request(GET, "http://localhost:$port/add?value=1&value=2")).answerShouldBe(3)
         client(Request(GET, "http://localhost:$port/multiply?value=2&value=4")).answerShouldBe(8)
@@ -50,17 +51,17 @@ class AddFunctionalTest {
     private val client = MyMathsApp()
 
     @Test
-    fun `adds values together`() {
+    fun `adds values together`() = runBlocking {
         client(Request(GET, "/add?value=1&value=2")).answerShouldBe(3)
     }
 
     @Test
-    fun `answer is zero when no values`() {
+    fun `answer is zero when no values`() = runBlocking {
         client(Request(GET, "/add")).answerShouldBe(0)
     }
 
     @Test
-    fun `bad request when some values are not numbers`() {
+    fun `bad request when some values are not numbers`() = runBlocking {
         client(Request(GET, "/add?value=1&value=notANumber")) shouldMatch hasStatus(BAD_REQUEST)
     }
 }
@@ -69,17 +70,17 @@ class MultiplyFunctionalTest {
     private val client = MyMathsApp()
 
     @Test
-    fun `products values together`() {
+    fun `products values together`() = runBlocking {
         client(Request(GET, "/multiply?value=2&value=4")).answerShouldBe(8)
     }
 
     @Test
-    fun `answer is zero when no values`() {
+    fun `answer is zero when no values`() = runBlocking {
         client(Request(GET, "/multiply")).answerShouldBe(0)
     }
 
     @Test
-    fun `bad request when some values are not numbers`() {
+    fun `bad request when some values are not numbers`() = runBlocking {
         client(Request(GET, "/multiply?value=1&value=notANumber")) shouldMatch hasStatus(BAD_REQUEST)
     }
 }

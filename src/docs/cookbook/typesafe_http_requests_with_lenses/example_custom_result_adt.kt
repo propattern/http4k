@@ -37,5 +37,4 @@ fun main() {
     val jsonResult: Result<JsonNode> = jsonResultLens.extract(Request(Method.GET, "/foo"))
 
     println(jsonResult)
-
 }

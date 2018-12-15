@@ -19,7 +19,7 @@ fun `recording traffic to disk proxy`() =
         .asServer(SunHttp())
         .start()
 
-fun `replay previously recorded traffic from a disk store`() =
+suspend fun `replay previously recorded traffic from a disk store`() =
     JavaHttpClient().let { client ->
         Disk("store").requests()
             .forEach {
@@ -28,7 +28,7 @@ fun `replay previously recorded traffic from a disk store`() =
             }
     }
 
-fun main() {
+suspend fun main() {
     setProperty("http.proxyHost", "localhost")
     setProperty("http.proxyPort", "8000")
     setProperty("http.nonProxyHosts", "localhost")

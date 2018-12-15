@@ -21,7 +21,7 @@ import org.http4k.server.Jetty
 import org.http4k.server.asServer
 
 class Recorder(private val client: HttpHandler) {
-    fun record(value: Int): Unit {
+    suspend fun record(value: Int) {
         val response = client(Request(POST, "/$value"))
         if (response.status != ACCEPTED) throw RuntimeException("recorder returned ${response.status}")
     }
@@ -31,17 +31,17 @@ fun MyMathsApp(recorderHttp: HttpHandler): HttpHandler {
     val recorder = Recorder(recorderHttp)
     return CatchLensFailure.then(
         routes(
-            "/ping" bind GET to { _: Request -> Response(OK) },
+            "/ping" bind GET to HttpHandler { Response(OK) },
             "/add" bind GET to calculate(recorder) { it.sum() },
             "/multiply" bind GET to calculate(recorder) { it.fold(1) { memo, next -> memo * next } }
         )
     )
 }
 
-private fun calculate(recorder: Recorder, fn: (List<Int>) -> Int): (Request) -> Response {
+private fun calculate(recorder: Recorder, fn: (List<Int>) -> Int): HttpHandler {
     val values = Query.int().multi.defaulted("value", listOf())
 
-    return { request: Request ->
+    return HttpHandler { request: Request ->
         val valuesToCalc = values.extract(request)
         val answer = if (valuesToCalc.isEmpty()) 0 else fn(valuesToCalc)
         recorder.record(answer)

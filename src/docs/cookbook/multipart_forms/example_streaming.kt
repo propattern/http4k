@@ -21,7 +21,7 @@ import org.http4k.lens.multipartForm
 import org.http4k.server.SunHttp
 import org.http4k.server.asServer
 
-fun main() {
+suspend fun main() {
 
     val server = ServerFilters.CatchAll().then { r: Request ->
 

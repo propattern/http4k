@@ -14,12 +14,12 @@ import org.http4k.lens.RequestContextKey
 import org.http4k.lens.RequestContextLens
 
 
-fun main() {
+suspend fun main() {
     data class SharedState(val message: String)
 
 
     fun AddState(key: RequestContextLens<SharedState>) = Filter { next ->
-        {
+        HttpHandler {
             // "modify" the request like any other Lens
             next(it.with(key of SharedState("hello there")))
         }

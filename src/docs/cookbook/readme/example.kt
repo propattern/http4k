@@ -15,12 +15,12 @@ import org.http4k.routing.routes
 import org.http4k.server.Jetty
 import org.http4k.server.asServer
 
-fun main() {
+suspend fun main() {
     // we can bind HttpHandlers (which are just functions from  Request -> Response) to paths/methods to create a Route,
     // then combine many Routes together to make another HttpHandler
     val app: HttpHandler = routes(
-        "/ping" bind GET to { _: Request -> Response(OK).body("pong!") },
-        "/greet/{name}" bind GET to { req: Request ->
+        "/ping" bind GET to HttpHandler { _: Request -> Response(OK).body("pong!") },
+        "/greet/{name}" bind GET to HttpHandler { req: Request ->
             val path: String? = req.path("name")
             Response(OK).body("hello ${path ?: "anon!"}")
         }
@@ -37,10 +37,8 @@ fun main() {
 //    hello Bob
 
     // this is a Filter - it performs pre/post processing on a request or response
-    val timingFilter = Filter HttpHandler {
-                next: HttpHandler ->
-
-        { request: Request ->
+    val timingFilter = Filter { next: HttpHandler ->
+        HttpHandler { request: Request ->
             val start = System.currentTimeMillis()
             val response = next(request)
             val latency = System.currentTimeMillis() - start

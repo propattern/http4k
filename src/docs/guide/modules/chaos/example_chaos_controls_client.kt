@@ -4,6 +4,7 @@ import org.http4k.chaos.ChaosBehaviours.ReturnStatus
 import org.http4k.chaos.ChaosTriggers.Always
 import org.http4k.chaos.appliedWhen
 import org.http4k.chaos.withChaosControls
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
 import org.http4k.core.Request
@@ -13,8 +14,8 @@ import org.http4k.core.Status.Companion.OK
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 
-fun main() {
-    val app = routes("/" bind routes("/" bind GET to { Response(OK).body("hello!") }))
+suspend fun main() {
+    val app = routes("/" bind routes("/" bind GET to HttpHandler { Response(OK).body("hello!") }))
 
     val appWithChaos = app.withChaosControls(ReturnStatus(NOT_FOUND).appliedWhen(Always))
 

@@ -1,6 +1,7 @@
 package guide.example._1_building_a_walking_skeleton
 
 import com.natpryce.hamkrest.should.shouldMatch
+import kotlinx.coroutines.runBlocking
 import org.http4k.client.OkHttp
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
@@ -27,7 +28,7 @@ class EndToEndTest {
     }
 
     @Test
-    fun `responds to ping`() {
+    fun `responds to ping`() = runBlocking {
         client(Request(GET, "http://localhost:$port/ping")) shouldMatch hasStatus(OK)
     }
 }

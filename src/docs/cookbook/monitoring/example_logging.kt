@@ -12,9 +12,9 @@ import org.http4k.routing.bind
 import org.http4k.routing.routes
 import java.time.Clock
 
-fun main() {
+suspend fun main() {
 
-    val app = routes("/{name}" bind { _: Request -> Response(OK) })
+    val app = routes("/{name}" bind HttpHandler { _: Request -> Response(OK) })
 
     fun logger(message: String) = println("${Clock.systemUTC().instant()} $message")
 

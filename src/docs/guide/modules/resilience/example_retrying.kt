@@ -10,7 +10,7 @@ import org.http4k.core.then
 import org.http4k.filter.ResilienceFilters
 import java.util.ArrayDeque
 
-fun main() {
+suspend fun main() {
 
     // configure the retry filter here, with max attempts and backoff
     val retry = Retry.of("retrying", RetryConfig.custom<RetryConfig>()

@@ -2,6 +2,7 @@ package cookbook.monitoring
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import org.http4k.client.ApacheClient
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -11,12 +12,12 @@ import org.http4k.filter.MetricFilters
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 
-fun main() {
+suspend fun main() {
 
     // this is a micrometer registry used mostly for testing - substitute the correct implementation.
     val registry = SimpleMeterRegistry()
 
-    val server = routes("/metrics/{name}" bind GET to { Response(OK) })
+    val server = routes("/metrics/{name}" bind GET to HttpHandler { Response(OK) })
 
     // apply filters to a server...
     val app = MetricFilters.Server.RequestCounter(registry)

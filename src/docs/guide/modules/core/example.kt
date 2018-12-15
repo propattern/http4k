@@ -1,7 +1,9 @@
 package guide.modules.core
 
+import kotlinx.coroutines.runBlocking
 import org.http4k.core.Body
 import org.http4k.core.ContentType
+import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -34,7 +36,7 @@ val requiredCustomQuery = Query.map(::CustomType, { it.value }).required("myCust
 
 //To use the Lens, simply `invoke() or extract()` it using an HTTP message to extract the value, or alternatively `invoke() or inject()` it with the value if we are modifying (via copy) the message:
 val handler: RoutingHttpHandler = routes(
-    "/hello/{date:.*}" bind GET to { request: Request ->
+    "/hello/{date:.*}" bind GET to HttpHandler { request: Request ->
         val pathDate: LocalDate = pathLocalDate(request)
         // SAME AS:
         // val pathDate: LocalDate = pathLocalDate.extract(request)
@@ -52,7 +54,7 @@ val handler: RoutingHttpHandler = routes(
 )
 
 //With the addition of the `CatchLensFailure` filter, no other validation is required when using Lenses, as **http4k** will handle invalid requests by returning a BAD_REQUEST (400) response.
-val app = ServerFilters.CatchLensFailure.then(handler)(Request(GET, "/hello/2000-01-01?myCustomType=someValue"))
+val app = runBlocking { ServerFilters.CatchLensFailure.then(handler)(Request(GET, "/hello/2000-01-01?myCustomType=someValue")) }
 
 //More conveniently for construction of HTTP messages, multiple lenses can be used at once to modify a message, which is useful for properly building both requests and responses in a typesafe way without resorting to string values (especially in URLs which should never be constructed using String concatenation):
 val modifiedRequest: Request = Request(GET, "http://google.com/{pathLocalDate}").with(

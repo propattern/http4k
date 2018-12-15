@@ -22,7 +22,7 @@ fun `latency injection proxy (between 100ms-500ms)`() =
         .asServer(SunHttp())
         .start()
 
-fun main() {
+suspend fun main() {
     setProperty("http.proxyHost", "localhost")
     setProperty("http.proxyPort", "8000")
     setProperty("http.nonProxyHosts", "localhost")
