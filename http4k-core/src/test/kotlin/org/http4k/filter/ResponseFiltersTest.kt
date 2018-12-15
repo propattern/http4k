@@ -7,7 +7,6 @@ import com.natpryce.hamkrest.should.shouldMatch
 import kotlinx.coroutines.runBlocking
 import org.http4k.core.Body
 import org.http4k.core.ContentType
-import org.http4k.core.HttpHandler
 import org.http4k.core.HttpTransaction
 import org.http4k.core.Body
 import org.http4k.core.ContentType

@@ -19,7 +19,7 @@
                     {% block site_name %}
                     {% if page %}
                     {% for parent in page.ancestors|reverse %}
-                        <span class="md-header-nav__parent">
+                    <span class="md-header-nav__parent">
                           {{ parent.title }} >
                         </span>
                     {% endfor %}

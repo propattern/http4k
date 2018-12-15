@@ -28,57 +28,57 @@ nav:
   - Installation:  installation/index.md
   - Getting started: quickstart/index.md
   - Developer Guide:
-    - Modules:
-      - AWS: guide/modules/aws/index.md
-      - Core: guide/modules/core/index.md
-      - Hamkrest: guide/modules/hamkrest/index.md
-      - HTTP/Websocket client: guide/modules/clients/index.md
-      - Metrics: guide/modules/metrics/index.md
-      - Message formats: guide/modules/message_formats/index.md
-      - Multipart forms: guide/modules/multipart/index.md
-      - Resilience: guide/modules/resilience/index.md
-      - Server backend: guide/modules/servers/index.md
-      - Serverless backend: guide/modules/serverless/index.md
-      - Templating: guide/modules/templating/index.md
-      - Typesafe contracts: guide/modules/contracts/index.md
-      - OAuth: guide/modules/oauth/index.md
-      - Cloud native: guide/modules/cloud_native/index.md
-      - WebDriver: guide/modules/webdriver/index.md
-      - Chaos Testing: guide/modules/chaos/index.md
-    - Application Testing: guide/testing/index.md
-    - Worked TDD Example:
-      - Introduction: guide/example/index.md
-      - 1. Building a walking skeleton: guide/example/_1_building_a_walking_skeleton/index.md
-      - 2. Adding an endpoint: guide/example/_2_adding_the_first_endpoint/index.md
-      - 3. Adding another endpoint: guide/example/_3_adding_the_second_endpoint/index.md
-      - 4. An external dependency: guide/example/_4_adding_an_external_dependency/index.md
-    - API docs: api/index.md
+      - Modules:
+          - AWS: guide/modules/aws/index.md
+          - Core: guide/modules/core/index.md
+          - Hamkrest: guide/modules/hamkrest/index.md
+          - HTTP/Websocket client: guide/modules/clients/index.md
+          - Metrics: guide/modules/metrics/index.md
+          - Message formats: guide/modules/message_formats/index.md
+          - Multipart forms: guide/modules/multipart/index.md
+          - Resilience: guide/modules/resilience/index.md
+          - Server backend: guide/modules/servers/index.md
+          - Serverless backend: guide/modules/serverless/index.md
+          - Templating: guide/modules/templating/index.md
+          - Typesafe contracts: guide/modules/contracts/index.md
+          - OAuth: guide/modules/oauth/index.md
+          - Cloud native: guide/modules/cloud_native/index.md
+          - WebDriver: guide/modules/webdriver/index.md
+          - Chaos Testing: guide/modules/chaos/index.md
+      - Application Testing: guide/testing/index.md
+      - Worked TDD Example:
+          - Introduction: guide/example/index.md
+          - 1. Building a walking skeleton: guide/example/_1_building_a_walking_skeleton/index.md
+          - 2. Adding an endpoint: guide/example/_2_adding_the_first_endpoint/index.md
+          - 3. Adding another endpoint: guide/example/_3_adding_the_second_endpoint/index.md
+          - 4. An external dependency: guide/example/_4_adding_an_external_dependency/index.md
+      - API docs: api/index.md
   - Cookbook:
-    - Server as a function: cookbook/server_as_a_function/index.md
-    - Client as a function: cookbook/client_as_a_function/index.md
-    - Container integration: cookbook/container_integration/index.md
-    - Simple routing: cookbook/simple_routing/index.md
-    - Nestable routes: cookbook/nestable_routes/index.md
-    - JSON messaging: cookbook/using_json/index.md
-    - Templating engines: cookbook/using_templates/index.md
-    - Typesafe RequestContexts: cookbook/request_context/index.md
-    - Typesafe HTTP requests with lenses: cookbook/typesafe_http_requests_with_lenses/index.md
-    - HTML forms: cookbook/html_forms/index.md
-    - Multipart forms: cookbook/multipart_forms/index.md
-    - Generating data classes for messages: cookbook/generating_data_classes/index.md
-    - Websockets: cookbook/websockets/index.md
-    - Typesafe HTTP contracts: cookbook/typesafe_http_contracts/index.md
-    - Custom OAuth configuration: cookbook/custom_oauth/index.md
-    - Principal lookup: cookbook/principal_lookup/index.md
-    - Monitoring http4k: cookbook/monitoring/index.md
-    - Recording/replaying HTTP traffic: cookbook/record_and_replay/index.md
-    - Test driven apps: cookbook/test_driven_apps/index.md
-    - Nanoservices: cookbook/nanoservices/index.md
+      - Server as a function: cookbook/server_as_a_function/index.md
+      - Client as a function: cookbook/client_as_a_function/index.md
+      - Container integration: cookbook/container_integration/index.md
+      - Simple routing: cookbook/simple_routing/index.md
+      - Nestable routes: cookbook/nestable_routes/index.md
+      - JSON messaging: cookbook/using_json/index.md
+      - Templating engines: cookbook/using_templates/index.md
+      - Typesafe RequestContexts: cookbook/request_context/index.md
+      - Typesafe HTTP requests with lenses: cookbook/typesafe_http_requests_with_lenses/index.md
+      - HTML forms: cookbook/html_forms/index.md
+      - Multipart forms: cookbook/multipart_forms/index.md
+      - Generating data classes for messages: cookbook/generating_data_classes/index.md
+      - Websockets: cookbook/websockets/index.md
+      - Typesafe HTTP contracts: cookbook/typesafe_http_contracts/index.md
+      - Custom OAuth configuration: cookbook/custom_oauth/index.md
+      - Principal lookup: cookbook/principal_lookup/index.md
+      - Monitoring http4k: cookbook/monitoring/index.md
+      - Recording/replaying HTTP traffic: cookbook/record_and_replay/index.md
+      - Test driven apps: cookbook/test_driven_apps/index.md
+      - Nanoservices: cookbook/nanoservices/index.md
   - Performance: performance/index.md
   - In action: in_action/index.md
   - Blog:
-    - Meet http4k: blog/meet_http4k/index.md
-    - Typesafe Websockets: blog/typesafe_websockets/index.md
+      - Meet http4k: blog/meet_http4k/index.md
+      - Typesafe Websockets: blog/typesafe_websockets/index.md
   - Changelog: changelog/index.md
   - Contribute/Support http4k: contributing/index.md
   - API docs: api/index.md

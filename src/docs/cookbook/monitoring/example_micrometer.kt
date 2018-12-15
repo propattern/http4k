@@ -2,7 +2,6 @@ package cookbook.monitoring
 
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import org.http4k.client.ApacheClient
-import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response

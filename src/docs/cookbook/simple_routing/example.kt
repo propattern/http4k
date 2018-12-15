@@ -1,6 +1,5 @@
 package cookbook.simple_routing
 
-import org.http4k.core.HttpHandler
 import org.http4k.core.Method.DELETE
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST

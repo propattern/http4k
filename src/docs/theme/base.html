@@ -7,27 +7,27 @@
 <head>
     {% block site_meta %}
     <meta charset="utf-8">
-    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml"/>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
     {% if page and page.meta.title %}
     <meta itemprop="name" content="{{ page.meta.title }}">
     <meta name="twitter:title" content="{{ page.meta.title }}">
-    <meta property="og:title" content="{{ page.meta.title }}" />
+    <meta property="og:title" content="{{ page.meta.title }}"/>
     {% else %}
     <meta itemprop="name" content="http4k - a functional Kotlin HTTP toolkit">
     <meta name="twitter:title" content="http4k - a functional Kotlin HTTP toolkit">
-    <meta property="og:title" content="http4k - a functional Kotlin HTTP toolkit" />
+    <meta property="og:title" content="http4k - a functional Kotlin HTTP toolkit"/>
     {% endif %}
 
     {% if page and page.meta and page.meta.description %}
     <meta name="description" content="{{ page.meta.description }}">
-    <meta property="og:description" content="{{ page.meta.description }}" />
+    <meta property="og:description" content="{{ page.meta.description }}"/>
     <meta name="twitter:description" content="{{ page.meta.description }}">
     {% elif config.site_description %}
     <meta name="description" content="{{ config.site_description }}">
-    <meta property="og:description" content="{{ config.site_description }}" />
+    <meta property="og:description" content="{{ config.site_description }}"/>
     <meta name="twitter:description" content="{{ config.site_description }}">
     {% endif %}
 
@@ -112,7 +112,13 @@
               font.text | replace(' ', '+')  + ':300,400,400i,700|' +
               font.code | replace(' ', '+')
             }}">
-    <style>body,input{font-family:"{{ font.text }}","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"{{ font.code }}","Courier New",Courier,monospace}</style>
+    <style>body, input {
+        font-family: "{{ font.text }}", "Helvetica Neue", Helvetica, Arial, sans-serif
+    }
+
+    code, kbd, pre {
+        font-family: "{{ font.code }}", "Courier New", Courier, monospace
+    }</style>
     {% endif %}
     {% endblock %}
     <link rel="stylesheet" href="{{ 'assets/fonts/material-icons.css' | url }}">
@@ -123,7 +129,7 @@
 </head>
 {% if palette.primary or palette.accent %}
 {% set primary = palette.primary | replace(" ", "-") | lower %}
-{% set accent  = palette.accent  | replace(" ", "-") | lower %}
+{% set accent = palette.accent | replace(" ", "-") | lower %}
 <body dir="{{ lang.t('direction') }}" data-md-color-primary="{{ primary }}" data-md-color-accent="{{ accent }}">
 {% else %}
 <body dir="{{ lang.t('direction') }}">
@@ -177,7 +183,8 @@
                 <article class="md-content__inner md-typeset">
                     {% block content %}
                     {% if page.edit_url %}
-                    <a href="{{ page.edit_url }}" title="{{ lang.t('edit.link.title') }}" class="md-icon md-content__icon">&#xE3C9;</a>
+                    <a href="{{ page.edit_url }}" title="{{ lang.t('edit.link.title') }}"
+                       class="md-icon md-content__icon">&#xE3C9;</a>
                     {% endif %}
                     {% if not "\x3ch1" in page.content %}
                     <h1>{{ page.title | default(config.site_name, true)}}</h1>
@@ -210,7 +217,7 @@
     {% endblock %}
 </div>
 {% block scripts %}
-      <script src="{{ 'assets/javascripts/application.583bbe55.js' | url }}"></script>
+<script src="{{ 'assets/javascripts/application.583bbe55.js' | url }}"></script>
 {% if lang.t("search.language") != "en" %}
 {% set languages = lang.t("search.language").split(",") %}
 {% if languages | length and languages[0] != "" %}
@@ -231,7 +238,7 @@
 {% endif %}
 {% endif %}
 {% endif %}
-<script>app.initialize({version:"{{ mkdocs_version }}",url:{base:"{{ base_url }}"}})</script>
+<script>app.initialize({version: "{{ mkdocs_version }}", url: {base: "{{ base_url }}"}})</script>
 {% for path in config["extra_javascript"] %}
 <script src="{{ path | url }}"></script>
 {% endfor %}

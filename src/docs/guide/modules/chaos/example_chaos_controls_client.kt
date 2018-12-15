@@ -4,7 +4,6 @@ import org.http4k.chaos.ChaosBehaviours.ReturnStatus
 import org.http4k.chaos.ChaosTriggers.Always
 import org.http4k.chaos.appliedWhen
 import org.http4k.chaos.withChaosControls
-import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
 import org.http4k.core.Request

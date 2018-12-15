@@ -1,1 +1,2 @@
-function hearMeNow() { }
+function hearMeNow() {
+}

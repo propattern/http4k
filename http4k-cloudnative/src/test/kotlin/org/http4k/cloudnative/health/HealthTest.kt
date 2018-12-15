@@ -3,7 +3,6 @@ package org.http4k.cloudnative.health
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.assertion.assertThat
 import kotlinx.coroutines.runBlocking
-import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
