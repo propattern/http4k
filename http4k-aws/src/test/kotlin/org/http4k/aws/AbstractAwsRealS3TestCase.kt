@@ -49,8 +49,10 @@ abstract class AbstractAwsRealS3TestCase {
     }
 
     @AfterEach
-    fun removeBucket() = runBlocking {
-        aClient()(Request(DELETE, bucketUrl))
+    fun removeBucket() {
+        runBlocking {
+            aClient()(Request(DELETE, bucketUrl))
+        }
     }
 
 
