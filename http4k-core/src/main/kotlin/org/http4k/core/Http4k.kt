@@ -10,7 +10,6 @@ interface HttpHandler {
             override suspend operator fun invoke(request: Request): Response = fn(request)
         }
     }
-
 }
 
 interface Filter {
