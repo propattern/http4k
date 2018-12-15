@@ -46,6 +46,9 @@ interface RoutingHttpHandler : Router, HttpHandler {
     fun withBasePath(new: String): RoutingHttpHandler
 }
 
+fun routes(vararg list: Pair<Method, suspend (Request) -> Response>): RoutingHttpHandler = routes(*list.map { "" bind it.first to it.second }.toTypedArray())
+
+@JvmName("routeHandlers")
 fun routes(vararg list: Pair<Method, HttpHandler>): RoutingHttpHandler = routes(*list.map { "" bind it.first to it.second }.toTypedArray())
 
 fun routes(vararg list: RoutingHttpHandler): RoutingHttpHandler = AggregateRoutingHttpHandler(*list)
@@ -73,6 +76,7 @@ fun Request.path(name: String): String? = when (this) {
 }
 
 data class PathMethod(val path: String, val method: Method) {
+    infix fun to(fn: suspend (Request) -> Response) = to(HttpHandler(fn))
     infix fun to(action: HttpHandler): RoutingHttpHandler =
         when (action) {
             is StaticRoutingHttpHandler -> action.withBasePath(path).let {

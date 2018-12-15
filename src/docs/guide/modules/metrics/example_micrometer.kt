@@ -17,7 +17,7 @@ suspend fun main() {
     // this is a micrometer registry used mostly for testing - substitute the correct implementation.
     val registry = SimpleMeterRegistry()
 
-    val server = routes("/metrics" bind GET to HttpHandler { Response(OK) })
+    val server = routes("/metrics" bind GET to { Response(OK) })
 
     // apply filters to a server...
     val app = MetricFilters.Server.RequestCounter(registry)

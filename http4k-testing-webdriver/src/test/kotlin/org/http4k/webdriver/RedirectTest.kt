@@ -27,13 +27,13 @@ class RedirectTest {
     private var cookiesSentToFinalDestination = listOf<HCookie>()
 
     private val redirectingHandler = routes(
-        finalUrl bind GET to HttpHandler { req: Request ->
+        finalUrl bind GET to { req: Request ->
             {
                 cookiesSentToFinalDestination = req.cookies()
                 Response(OK).body("You made it!")
             }()
         },
-        startingUrl bind GET to HttpHandler {
+        startingUrl bind GET to {
             Response(SEE_OTHER)
                 .header("Location", finalUrl)
                 .cookie(org.http4k.core.cookie.Cookie(cookieKey, cookieValue))

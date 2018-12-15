@@ -13,9 +13,9 @@ import org.http4k.routing.routes
 suspend fun main() {
 
     val app = routes(
-        "bob" bind GET to HttpHandler { Response(OK).body("you GET bob") },
-        "rita" bind POST to HttpHandler { Response(OK).body("you POST rita") },
-        "sue" bind DELETE to HttpHandler { Response(OK).body("you DELETE sue") }
+        "bob" bind GET to { Response(OK).body("you GET bob") },
+        "rita" bind POST to { Response(OK).body("you POST rita") },
+        "sue" bind DELETE to { Response(OK).body("you DELETE sue") }
     )
 
     println(app(Request(GET, "/bob")))

@@ -70,7 +70,7 @@ class FakeOAuthServer(oAuthClientConfig: OAuthProviderConfig, serviceName: Strin
             oAuthClientConfig.authPath bind POST to login,
             oAuthClientConfig.tokenPath bind POST to generateAccessToken,
             "/fakeLogin" bind POST to submit,
-            "/" bind GET to HttpHandler { Response(OK).with(html of templates(OAuthIndex(serviceName))) }
+            "/" bind GET to { Response(OK).with(html of templates(OAuthIndex(serviceName))) }
         )
     )
 

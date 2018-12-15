@@ -19,8 +19,8 @@ suspend fun main() {
     val routesWithFilter =
         PrintRequestAndResponse().then(
             routes(
-                "/get/{name}" bind GET to HttpHandler { req: Request -> Response(OK).body(req.path("name")!!) },
-                "/post/{name}" bind POST to HttpHandler { _: Request -> Response(OK) }
+                "/get/{name}" bind GET to { req: Request -> Response(OK).body(req.path("name")!!) },
+                "/post/{name}" bind POST to { _: Request -> Response(OK) }
             )
         )
     println(routesWithFilter(Request(GET, "/get/value")))
@@ -30,8 +30,8 @@ suspend fun main() {
         "/bob" bind routesWithFilter,
         "/static" bind staticWithFilter,
         "/rita" bind routes(
-            "/delete/{name}" bind DELETE to HttpHandler { _: Request -> Response(OK) },
-            "/post/{name}" bind POST to HttpHandler { _: Request -> Response(OK) }
+            "/delete/{name}" bind DELETE to { _: Request -> Response(OK) },
+            "/post/{name}" bind POST to { _: Request -> Response(OK) }
         )
     )
 

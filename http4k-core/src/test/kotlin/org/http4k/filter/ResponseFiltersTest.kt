@@ -139,7 +139,7 @@ class ResponseFiltersTest {
     fun `reporting latency for known route`() = runBlocking {
         var called: String? = null
         val filter = ResponseFilters.ReportRouteLatency(Clock.systemUTC()) { identity, _ -> called = identity }
-        val handler = filter.then(routes("/bob/{anything:.*}" bind GET to HttpHandler { Response(OK) }))
+        val handler = filter.then(routes("/bob/{anything:.*}" bind GET to { Response(OK) }))
 
         handler(Request(GET, "/bob/dir/someFile.html"))
 
@@ -170,7 +170,7 @@ class ResponseFiltersTest {
         }
 
         val handler = filter.then(
-            routes("/sue" bind routes("/bob/{name}" bind GET to HttpHandler { Response(OK) }))
+            routes("/sue" bind routes("/bob/{name}" bind GET to { Response(OK) }))
         )
 
         val request = Request(GET, "/sue/bob/rita")

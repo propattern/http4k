@@ -29,7 +29,7 @@ import org.http4k.lens.ParamMeta.NumberParam
 import org.http4k.lens.ParamMeta.StringParam
 import org.http4k.lens.Path
 import org.http4k.lens.Query
-import org.http4k.lens.Validator.Strict
+import org.http4k.lens.Validator
 import org.http4k.lens.boolean
 import org.http4k.lens.int
 import org.http4k.lens.string
@@ -69,7 +69,8 @@ abstract class ContractRendererContract(private val renderer: ContractRenderer) 
                 tags += Tag("tag3")
                 tags += Tag("tag1")
             } bindContract GET to HttpHandler { Response(OK) },
-            "/paths" / Path.of("firstName") / "bertrand" / Path.boolean().of("age") bindContract POST to { a, _, _ -> HttpHandler { Response(OK).body(a) } },
+            "/paths" / Path.of("firstName") / "bertrand" / Path.boolean().of("age")
+                bindContract POST to { a, _, _ -> HttpHandler { Response(OK).body(a) } },
             "/queries" meta {
                 queries += Query.boolean().required("b", "booleanQuery")
                 queries += Query.string().optional("s", "stringQuery")
@@ -82,24 +83,25 @@ abstract class ContractRendererContract(private val renderer: ContractRenderer) 
                 headers += Header.int().optional("i", "intHeader")
                 headers += Header.json().optional("j", "jsonHeader")
             } bindContract POST to HttpHandler { Response(OK).body("hello") },
-            "/body_string" meta { receiving(Body.string(ContentType.TEXT_PLAIN).toLens()) } bindContract POST to HttpHandler { Response(OK) },
+            "/body_string" meta { receiving(Body.string(ContentType.TEXT_PLAIN).toLens()) }
+                bindContract POST to HttpHandler { Response(OK) },
             "/body_json_noschema" meta {
                 receiving(Body.json("json").toLens())
             }
                 bindContract POST to HttpHandler { Response(OK) },
-            "/body_json_schema" meta {
-                receiving(Body.json("json").toLens() to Argo { obj("anAnotherObject" to obj("aNumberField" to number(123))) }, "someDefinitionId")
-            }
-                bindContract POST to HttpHandler { Response(OK) },
+//            "/body_json_schema" meta {
+//                receiving(Body.json("json").toLens() to Argo { obj("anAnotherObject" to obj("aNumberField" to number(123))) }, "someDefinitionId")
+//            }
+//                bindContract POST to HttpHandler { Response(OK) },
             "/body_form" meta {
-                receiving(Body.webForm(Strict,
+                receiving(Body.webForm(Validator.Strict,
                     FormField.boolean().required("b", "booleanField"),
                     FormField.int().optional("i", "intField"),
                     FormField.string().optional("s", "stringField"),
                     FormField.json().required("j", "jsonField")
                 ).toLens())
             } bindContract POST to HttpHandler { Response(OK) },
-//            "/body_xml" meta { receiving(Body.xml("json").toLens() to Argo { obj("anAnotherObject" to obj("aNumberField" to number(123))) }) } bindContract GET to HttpHandler { Response(OK) },
+////            "/body_xml" meta { receiving(Body.xml("json").toLens() to Argo { obj("anAnotherObject" to obj("aNumberField" to number(123))) }) } bindContract GET to { Response(OK) },
             "/produces_and_consumes" meta {
                 produces += APPLICATION_JSON
                 produces += APPLICATION_XML

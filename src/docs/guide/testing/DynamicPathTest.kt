@@ -3,7 +3,6 @@ package guide.testing
 import com.natpryce.hamkrest.and
 import com.natpryce.hamkrest.should.shouldMatch
 import kotlinx.coroutines.runBlocking
-import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -16,7 +15,7 @@ import org.http4k.routing.path
 import org.http4k.routing.routes
 import org.junit.jupiter.api.Test
 
-val EchoPath = "/echo/{message}" bind GET to HttpHandler { r -> Response(OK).body(r.path("message") ?: "nothing!") }
+val EchoPath = "/echo/{message}" bind GET to { r -> Response(OK).body(r.path("message") ?: "nothing!") }
 
 class DynamicPathTest {
 

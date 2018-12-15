@@ -43,35 +43,35 @@ abstract class AbstractHttpClientContract(private val serverConfig: (Int) -> Ser
                 .body(request.body)
         }
         val app = routes("/someUri" bind POST to defaultHandler,
-            "/cookies/set" bind GET to HttpHandler { req: Request ->
+            "/cookies/set" bind GET to { req: Request ->
                 Response(FOUND).header("Location", "/cookies").cookie(Cookie(req.query("name")!!, req.query("value")!!))
             },
-            "/cookies" bind GET to HttpHandler { req: Request ->
+            "/cookies" bind GET to { req: Request ->
                 Response(OK).body(req.cookies().joinToString(",") { it.name + "=" + it.value })
             },
-            "/empty" bind GET to HttpHandler { Response(OK).body("") },
-            "/relative-redirect/{times}" bind GET to HttpHandler { req: Request ->
+            "/empty" bind GET to { Response(OK).body("") },
+            "/relative-redirect/{times}" bind GET to { req: Request ->
                 val times = req.path("times")?.toInt() ?: 0
                 if (times == 0) Response(OK)
                 else Response(FOUND).header("Location", "/relative-redirect/${times - 1}")
             },
-            "/redirect" bind GET to HttpHandler { Response(FOUND).header("Location", "/someUri").body("") },
-            "/stream" bind GET to HttpHandler { Response(OK).body("stream".byteInputStream()) },
-            "/delay/{millis}" bind GET to HttpHandler { r: Request ->
+            "/redirect" bind GET to { Response(FOUND).header("Location", "/someUri").body("") },
+            "/stream" bind GET to { Response(OK).body("stream".byteInputStream()) },
+            "/delay/{millis}" bind GET to { r: Request ->
                 Thread.sleep(r.path("millis")!!.toLong())
                 Response(OK)
             },
             "/echo" bind routes(
-                DELETE to HttpHandler { Response(OK).body("delete") },
-                GET to HttpHandler { request: Request -> Response(OK).body(request.uri.toString()) },
+                DELETE to HttpHandler { request: Request -> Response(OK).body("delete") },
+                GET to HttpHandler{ request: Request -> Response(OK).body(request.uri.toString()) },
                 POST to HttpHandler { request: Request -> Response(OK).body(request.bodyString()) }
             ),
             "/headers" bind HttpHandler { request: Request -> Response(OK).body(request.headers.joinToString(",") { it.first }) },
-            "/check-image" bind POST to HttpHandler { request: Request ->
+            "/check-image" bind POST to { request: Request ->
                 if (Arrays.equals(testImageBytes(), request.body.payload.array()))
                     Response(OK) else Response(BAD_REQUEST.description("Image content does not match"))
             },
-            "/status/{status}" bind GET to HttpHandler { r: Request ->
+            "/status/{status}" bind GET to { r: Request ->
                 val status = Status(r.path("status")!!.toInt(), "")
                 Response(status).body("body for status ${status.code}")
             })

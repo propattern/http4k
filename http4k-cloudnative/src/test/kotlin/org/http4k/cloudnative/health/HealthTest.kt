@@ -16,7 +16,7 @@ import org.http4k.routing.bind
 import org.junit.jupiter.api.Test
 
 class HealthTest {
-    private val health = Health(extraRoutes = *arrayOf("/other" bind GET to HttpHandler { Response(I_M_A_TEAPOT) }))
+    private val health = Health(extraRoutes = *arrayOf("/other" bind GET to { Response(I_M_A_TEAPOT) }))
 
     @Test
     fun liveness() = runBlocking {

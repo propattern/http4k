@@ -15,7 +15,7 @@ import org.http4k.routing.bind
 import org.http4k.routing.routes
 
 suspend fun main() {
-    val app = routes("/" bind routes("/" bind GET to HttpHandler { Response(OK).body("hello!") }))
+    val app = routes("/" bind routes("/" bind GET to { Response(OK).body("hello!") }))
 
     val appWithChaos = app.withChaosControls(ReturnStatus(NOT_FOUND).appliedWhen(Always))
 

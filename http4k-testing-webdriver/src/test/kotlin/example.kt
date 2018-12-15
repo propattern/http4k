@@ -13,7 +13,7 @@ import org.openqa.selenium.By
 fun main() {
 
     val app = routes(
-        "/hello" bind GET to HttpHandler {
+        "/hello" bind GET to {
             Response(Status.OK).body("<html><title>hello</title></html>")
         }
     )

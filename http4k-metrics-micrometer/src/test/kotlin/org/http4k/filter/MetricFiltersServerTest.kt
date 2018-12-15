@@ -32,16 +32,16 @@ class MetricFiltersServerTest {
     private val server by lazy {
         routes(
             "/timed" bind routes(
-                "/one" bind GET to HttpHandler { Response(OK) },
-                "/two/{name:.*}" bind POST to HttpHandler { Response(OK).body(Path.of("name")(it)) }
+                "/one" bind GET to { Response(OK) },
+                "/two/{name:.*}" bind POST to { Response(OK).body(Path.of("name")(it)) }
             ).withFilter(requestTimer),
             "/counted" bind routes(
-                "/one" bind GET to HttpHandler { Response(OK) },
-                "/two/{name:.*}" bind POST to HttpHandler { Response(OK).body(Path.of("name")(it)) }
+                "/one" bind GET to { Response(OK) },
+                "/two/{name:.*}" bind POST to { Response(OK).body(Path.of("name")(it)) }
             ).withFilter(requestCounter),
             "/unmetered" bind routes(
-                "one" bind GET to HttpHandler { Response(OK) },
-                "two" bind DELETE to HttpHandler { Response(INTERNAL_SERVER_ERROR) }
+                "one" bind GET to { Response(OK) },
+                "two" bind DELETE to { Response(INTERNAL_SERVER_ERROR) }
             ),
             "/otherTimed" bind static().withFilter(requestTimer),
             "/otherCounted" bind static().withFilter(requestCounter)

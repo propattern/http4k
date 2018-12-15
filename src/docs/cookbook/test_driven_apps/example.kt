@@ -60,7 +60,7 @@ class FakeRecorderHttp : HttpHandler {
     val calls = mutableListOf<Int>()
 
     private val app = routes(
-        "/{answer}" bind POST to HttpHandler { request -> calls.add(request.path("answer")!!.toInt()); Response(OK) }
+        "/{answer}" bind POST to { request -> calls.add(request.path("answer")!!.toInt()); Response(OK) }
     )
 
     override suspend fun invoke(request: Request): Response = app(request)

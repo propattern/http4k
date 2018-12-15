@@ -200,7 +200,7 @@ open class StaticRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
 
     @Test
     fun `application of filter - nested and first`() = runBlocking {
-        val handler = routes("/first" bind static(), "/second" bind GET to HttpHandler { Response(INTERNAL_SERVER_ERROR) })
+        val handler = routes("/first" bind static(), "/second" bind GET to { Response(INTERNAL_SERVER_ERROR) })
 
         handler.assertFilterCalledOnce("/first/mybob.xml", OK)
         handler.assertFilterCalledOnce("/first/notmybob.xml", NOT_FOUND)
@@ -211,9 +211,9 @@ open class StaticRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     @Test
     fun `application of filter - nested and middle`() = runBlocking {
         val handler = routes(
-            "/first" bind GET to HttpHandler { Response(INTERNAL_SERVER_ERROR) },
+            "/first" bind GET to { Response(INTERNAL_SERVER_ERROR) },
             "/second" bind static(),
-            "/third" bind GET to HttpHandler { Response(I_M_A_TEAPOT) }
+            "/third" bind GET to { Response(I_M_A_TEAPOT) }
         )
 
         handler.assertFilterCalledOnce("/first", INTERNAL_SERVER_ERROR)
@@ -226,8 +226,8 @@ open class StaticRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     @Test
     fun `application of filter - nested and last`() = runBlocking {
         val handler = routes(
-            "/first" bind GET to HttpHandler { Response(INTERNAL_SERVER_ERROR) },
-            "/second" bind GET to HttpHandler { Response(I_M_A_TEAPOT) },
+            "/first" bind GET to { Response(INTERNAL_SERVER_ERROR) },
+            "/second" bind GET to { Response(I_M_A_TEAPOT) },
             "/third" bind static()
         )
         handler.assertFilterCalledOnce("/first", INTERNAL_SERVER_ERROR)
