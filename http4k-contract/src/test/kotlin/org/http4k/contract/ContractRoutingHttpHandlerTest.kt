@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test
 
 class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     override val handler: RoutingHttpHandler =
-        contract(SimpleJson(Argo), "/", validPath bindContract GET to2 { Response(OK).with(header of header(it)) })
+        contract(SimpleJson(Argo), "/", validPath bindContract GET to HttpHandler { Response(OK).with(header of header(it)) })
 
     private val header = Header.optional("FILTER")
 
@@ -50,7 +50,7 @@ class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
         }
 
         val root = "/root" bind contract(SimpleJson(Argo), "/docs",
-            "/" bindContract GET to2 { Response(OK).with(header of header(it)) })
+            "/" bindContract GET to HttpHandler { Response(OK).with(header of header(it)) })
         val withRoute = filter.then(root)
 
         val response = withRoute(Request(GET, "/root"))
@@ -75,7 +75,7 @@ class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     fun `OPTIONS traffic goes to the path specified but is intercepted by the default response if the route does NOT response to OPTIONS`() = runBlocking {
         val root = routes(
             "/root/bar" bind contract(
-                "/foo/bar" bindContract GET to2 { Response(NOT_IMPLEMENTED) })
+                "/foo/bar" bindContract GET to HttpHandler { Response(NOT_IMPLEMENTED) })
         )
         val response = root(Request(OPTIONS, "/root/bar/foo/bar"))
 
@@ -108,7 +108,7 @@ class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     @Test
     fun `applies security and responds with a 401 to unauthorized requests`() = runBlocking {
         val root = "/root" bind contract(SimpleJson(Argo), "", ApiKey(Query.required("key"), { it == "bob" }),
-            "/bob" bindContract GET to2 { Response(OK) }
+            "/bob" bindContract GET to HttpHandler { Response(OK) }
         )
 
         val response = root(Request(GET, "/root/bob?key=sue"))
@@ -118,7 +118,7 @@ class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     @Test
     fun `pre-security filter is applied before security`() = runBlocking {
         val root = "/root" bind contract(SimpleJson(Argo), "", ApiKey(Query.required("key"), { it == "bob" }),
-            "/bob" bindContract GET to2 { Response(OK) }
+            "/bob" bindContract GET to HttpHandler { Response(OK) }
         ).withFilter(Filter { next ->
             HttpHandler {
                 next(it.query("key", "bob"))
@@ -131,7 +131,7 @@ class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     @Test
     fun `post-security filter is applied after security`() = runBlocking {
         val root = "/root" bind contract(SimpleJson(Argo), "", ApiKey(Query.required("key"), { it == "bob" }),
-            "/bob" bindContract GET to2 { Response(OK).body(it.body) }
+            "/bob" bindContract GET to HttpHandler { Response(OK).body(it.body) }
         ).withPostSecurityFilter(Filter { next ->
             HttpHandler {
                 next(it.body("body"))
@@ -144,7 +144,7 @@ class ContractRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     @Test
     fun `applies security and responds with a 200 to authorized requests`() = runBlocking {
         val root = "/root" bind contract(SimpleJson(Argo), "", ApiKey(Query.required("key"), { it == "bob" }),
-            "/bob" bindContract GET to2 { Response(OK) }
+            "/bob" bindContract GET to HttpHandler { Response(OK) }
         )
 
         val response = root(Request(GET, "/root/bob?key=bob"))
