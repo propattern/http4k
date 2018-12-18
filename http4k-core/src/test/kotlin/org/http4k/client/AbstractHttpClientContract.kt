@@ -62,9 +62,9 @@ abstract class AbstractHttpClientContract(private val serverConfig: (Int) -> Ser
                 Response(OK)
             },
             "/echo" bind routes(
-                DELETE to HttpHandler { request: Request -> Response(OK).body("delete") },
-                GET to HttpHandler { request: Request -> Response(OK).body(request.uri.toString()) },
-                POST to HttpHandler { request: Request -> Response(OK).body(request.bodyString()) }
+                DELETE to { request: Request -> Response(OK).body("delete") },
+                GET to { request: Request -> Response(OK).body(request.uri.toString()) },
+                POST to { request: Request -> Response(OK).body(request.bodyString()) }
             ),
             "/headers" bind HttpHandler { request: Request -> Response(OK).body(request.headers.joinToString(",") { it.first }) },
             "/check-image" bind POST to { request: Request ->

@@ -102,8 +102,8 @@ class RoutingTest {
                 "/e" bind routes(
                     "/f" bind GET to { Response(OK).body("matched b/c/e/f") },
                     "/g" bind routes(
-                        GET to HttpHandler { Response(OK).body("matched b/c/e/g/GET") },
-                        POST to HttpHandler { Response(OK).body("matched b/c/e/g/POST") }
+                        GET to { Response(OK).body("matched b/c/e/g/GET") },
+                        POST to { Response(OK).body("matched b/c/e/g/POST") }
                     )
                 ),
                 "/" bind GET to { Response(OK).body("matched b/c") }

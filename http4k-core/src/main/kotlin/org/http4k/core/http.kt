@@ -117,7 +117,10 @@ interface HttpMessage : Closeable {
     override fun close() = body.close()
 }
 
-enum class Method { GET, POST, PUT, DELETE, OPTIONS, TRACE, PATCH, PURGE, HEAD }
+enum class Method {
+    GET, POST, PUT, DELETE, OPTIONS, TRACE, PATCH, PURGE, HEAD;
+    infix fun to(fn: RespondAsync) = this to HttpHandler(fn)
+}
 
 interface Request : HttpMessage {
     val method: Method

@@ -47,9 +47,6 @@ interface RoutingHttpHandler : Router, HttpHandler {
     fun withBasePath(new: String): RoutingHttpHandler
 }
 
-fun routes(vararg list: Pair<Method, suspend (Request) -> Response>): RoutingHttpHandler = routes(*list.map { "" bind it.first to it.second }.toTypedArray())
-
-@JvmName("routeHandlers")
 fun routes(vararg list: Pair<Method, HttpHandler>): RoutingHttpHandler = routes(*list.map { "" bind it.first to it.second }.toTypedArray())
 
 fun routes(vararg list: RoutingHttpHandler): RoutingHttpHandler = AggregateRoutingHttpHandler(*list)
