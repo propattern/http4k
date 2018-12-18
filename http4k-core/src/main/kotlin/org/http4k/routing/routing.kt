@@ -7,6 +7,7 @@ import org.http4k.core.Headers
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Request
+import org.http4k.core.RespondAsync
 import org.http4k.core.Response
 import org.http4k.core.Uri
 import org.http4k.core.UriTemplate
@@ -94,6 +95,8 @@ data class PathMethod(val path: String, val method: Method) {
 infix fun String.bind(method: Method): PathMethod = PathMethod(this, method)
 
 infix fun String.bind(httpHandler: RoutingHttpHandler): RoutingHttpHandler = httpHandler.withBasePath(this)
+
+infix fun String.bind(fn: RespondAsync): RoutingHttpHandler = bind(HttpHandler(fn))
 
 infix fun String.bind(action: HttpHandler): RoutingHttpHandler = TemplateRoutingHttpHandler(null, UriTemplate.from(this), action)
 

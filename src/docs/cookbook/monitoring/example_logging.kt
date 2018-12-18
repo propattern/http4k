@@ -14,7 +14,7 @@ import java.time.Clock
 
 suspend fun main() {
 
-    val app = routes("/{name}" bind HttpHandler { _: Request -> Response(OK) })
+    val app = routes("/{name}" bind { _: Request -> Response(OK) })
 
     fun logger(message: String) = println("${Clock.systemUTC().instant()} $message")
 
