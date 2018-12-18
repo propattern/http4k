@@ -119,6 +119,7 @@ interface HttpMessage : Closeable {
 
 enum class Method {
     GET, POST, PUT, DELETE, OPTIONS, TRACE, PATCH, PURGE, HEAD;
+
     infix fun to(fn: RespondAsync) = this to HttpHandler(fn)
 }
 
