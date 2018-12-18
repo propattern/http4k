@@ -63,7 +63,7 @@ object RequestFilters {
      * Note the use of the ProxyProtocolMode to set the outbound scheme
      */
     object ProxyHost {
-        operator fun invoke(mode: ProxyProtocolMode = ProxyProtocolMode.Http): Filter = Filter { next ->
+        operator fun invoke(mode: ProxyProtocolMode = ProxyProtocolMode.Http) = Filter { next ->
             HttpHandler {
                 it.header("Host")?.let { host -> next(it.uri(mode(it.uri).authority(host))) }
                     ?: Response(BAD_REQUEST.description("Cannot proxy without host header"))

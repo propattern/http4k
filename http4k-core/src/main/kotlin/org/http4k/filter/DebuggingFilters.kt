@@ -23,7 +23,7 @@ object DebuggingFilters {
      * Print details of the response before it is returned.
      */
     object PrintResponse {
-        operator fun invoke(out: PrintStream = System.out, debugStream: Boolean = defaultDebugStream): Filter = Filter { next ->
+        operator fun invoke(out: PrintStream = System.out, debugStream: Boolean = defaultDebugStream) = Filter { next ->
             HttpHandler {
                 try {
                     next(it).let { response ->

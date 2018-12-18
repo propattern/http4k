@@ -148,7 +148,7 @@ object ChaosBehaviours {
      */
     object BlockThread {
         operator fun invoke() = object : Behaviour {
-            override suspend fun invoke(next: HttpHandler): HttpHandler = HttpHandler {
+            override suspend fun invoke(next: HttpHandler) = HttpHandler {
                 next(it).apply { Thread.currentThread().join() }
             }
 
