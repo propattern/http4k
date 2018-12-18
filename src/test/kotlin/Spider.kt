@@ -20,7 +20,6 @@ fun main() {
 
     fun spider(url: String, visited: List<String> = emptyList()): SpiderReport = try {
         val actualUrl = "/${url.trimStart('/')}"
-        println("visiting: " + actualUrl)
         driver.get(actualUrl)
         val nowVisited = visited.plus(actualUrl)
 

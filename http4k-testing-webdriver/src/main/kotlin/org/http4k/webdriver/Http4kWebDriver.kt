@@ -5,6 +5,7 @@ import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
+import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.Uri
 import org.http4k.core.then
@@ -33,6 +34,9 @@ interface Http4KNavigation : Navigation {
 }
 
 class Http4kWebDriver(initialHandler: HttpHandler) : WebDriver {
+
+    constructor(fn: suspend (Request) -> Response): this(HttpHandler(fn))
+
     private val handler = ClientFilters.FollowRedirects()
         .then(ClientFilters.Cookies(storage = cookieStorage()))
         .then(Filter { next -> HttpHandler { request -> latestUri = request.uri.toString(); next(request) } })
