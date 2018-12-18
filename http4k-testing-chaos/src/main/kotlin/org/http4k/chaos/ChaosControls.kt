@@ -12,16 +12,6 @@ import org.http4k.contract.meta
 import org.http4k.core.Body
 import org.http4k.core.Filter
 import org.http4k.core.HttpHandler
-import org.http4k.contract.ApiInfo
-import org.http4k.contract.NoSecurity
-import org.http4k.contract.OpenApi
-import org.http4k.contract.Security
-import org.http4k.contract.bindContract
-import org.http4k.contract.contract
-import org.http4k.contract.meta
-import org.http4k.core.Body
-import org.http4k.core.Filter
-import org.http4k.core.HttpHandler
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.POST
 import org.http4k.core.Response

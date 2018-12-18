@@ -6,7 +6,6 @@ import org.http4k.chaos.ChaosStages.Repeat
 import org.http4k.chaos.ChaosStages.Wait
 import org.http4k.chaos.ChaosTriggers.Always
 import org.http4k.core.Filter
-import org.http4k.core.HttpHandler
 import org.http4k.core.NoOp
 import org.http4k.core.Request
 import org.http4k.core.then

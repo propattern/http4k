@@ -15,10 +15,6 @@ import org.http4k.core.ContentType.Companion.TEXT_HTML
 import org.http4k.core.Filter
 import org.http4k.core.Headers
 import org.http4k.core.Method
-import org.http4k.core.Filter
-import org.http4k.core.Headers
-import org.http4k.core.HttpHandler
-import org.http4k.core.Method
 import org.http4k.core.Method.DELETE
 import org.http4k.core.Method.GET
 import org.http4k.core.Method.OPTIONS

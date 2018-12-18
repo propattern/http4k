@@ -7,8 +7,6 @@ import kotlinx.coroutines.runBlocking
 import org.http4k.core.ContentType.Companion.APPLICATION_XML
 import org.http4k.core.ContentType.Companion.TEXT_HTML
 import org.http4k.core.Filter
-import org.http4k.core.HttpHandler
-import org.http4k.core.Filter
 import org.http4k.core.Method.GET
 import org.http4k.core.Request
 import org.http4k.core.Response

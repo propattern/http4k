@@ -25,14 +25,17 @@ class FilterTest {
 
     @Test
     fun `applies in order of chain`() = runBlocking {
-        val minus10 = Filter { next -> {
-            println("minus10 " + (it.header("hello")!!.toInt() - 10))
-            next(it.replaceHeader("hello", (it.header("hello")!!.toInt() - 10).toString())) }
+        val minus10 = Filter { next ->
+            {
+                println("minus10 " + (it.header("hello")!!.toInt() - 10))
+                next(it.replaceHeader("hello", (it.header("hello")!!.toInt() - 10).toString()))
+            }
         }
         val double = Filter { next ->
             {
-                println("double "  + (it.header("hello")!!.toInt() * 2))
-                next(it.replaceHeader("hello", (it.header("hello")!!.toInt() * 2).toString())) }
+                println("double " + (it.header("hello")!!.toInt() * 2))
+                next(it.replaceHeader("hello", (it.header("hello")!!.toInt() * 2).toString()))
+            }
         }
 
         val final = double.then(minus10).then(echoHeaders)
