@@ -43,7 +43,7 @@ data class ContractRoutingHttpHandler(private val renderer: ContractRenderer,
 
     override suspend fun invoke(request: Request): Response = handler(request)
 
-    private val descriptionRoute = ContractRouteSpec0({ PathSegments("$it$descriptionPath") }, RouteMeta()) bindContract GET to HttpHandler { renderer.description(contractRoot, security, routes) }
+    private val descriptionRoute = ContractRouteSpec0({ PathSegments("$it$descriptionPath") }, RouteMeta()) bindContract GET to { renderer.description(contractRoot, security, routes) }
 
     private val routers: List<Pair<Filter, Router>> = routes
         .map { CatchLensFailure.then(identify(it)).then(standardFilters) to it.toRouter(contractRoot) }
