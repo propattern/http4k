@@ -12,13 +12,13 @@ matrix:
       language: java
       jdk: openjdk11
       script:
-        - "./gradlew -i check jacocoRootReport"
+      - "./gradlew -i check jacocoRootReport"
       after_success:
-        - bash <(curl -s https://codecov.io/bash)
+      - bash <(curl -s https://codecov.io/bash)
       cache:
         directories:
-          - "$HOME/.m2"
-          - "$HOME/.gradle"
+        - "$HOME/.m2"
+        - "$HOME/.gradle"
     - stage: bintray
       if: branch = master
       language: java
@@ -28,13 +28,13 @@ matrix:
       if: branch = master
       language: python
       script:
-        - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./release-site.sh; fi'
+      - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./release-site.sh; fi'
     - stage: api
       if: branch = master
       language: java
       jdk: openjdk11
       script:
-        - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./release-api.sh; fi'
+      - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then ./release-api.sh; fi'
     - stage: maven central
       if: branch = master
       language: java
