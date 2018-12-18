@@ -48,7 +48,7 @@ object App {
     }
 
     private val rewriteUriToLocalhostAsWeDoNotHaveDns = Filter { next ->
-        HttpHandler {
+        {
             println("Rewriting ${it.uri} so we can proxy properly")
             next(it.uri(it.uri.authority("localhost:9000")))
         }

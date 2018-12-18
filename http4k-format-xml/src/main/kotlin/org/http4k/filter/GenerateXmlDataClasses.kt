@@ -13,7 +13,7 @@ class GenerateXmlDataClasses(out: PrintStream = System.out,
                              idGenerator: () -> Int = { Math.abs(Random().nextInt()) }) : Filter {
 
     private val chains = GenerateDataClasses(Gson, out, idGenerator).then(Filter { next ->
-        HttpHandler {
+        {
             val originalResponse = next(it)
             originalResponse.with(Gson.body().toLens() of (originalResponse.bodyString().asXmlToJsonElement()))
         }

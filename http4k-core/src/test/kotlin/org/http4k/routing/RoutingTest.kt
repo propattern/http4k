@@ -207,7 +207,7 @@ class RoutingTest {
 
         var count = 0
         val filter = Filter { next ->
-            HttpHandler {
+            {
                 next(it.replaceHeader("header", "value" + count++))
             }
         }
@@ -248,7 +248,7 @@ class RoutingTest {
     @Test
     fun `can add filter to router`() = runBlocking {
         val changePathFilter = Filter { next ->
-            HttpHandler { next(it.uri(it.uri.path("/svc/mybob.xml"))) }
+            { next(it.uri(it.uri.path("/svc/mybob.xml"))) }
         }
         val handler = "/svc" bind changePathFilter.then(static())
         val req = Request(GET, Uri.of("/svc/notmybob.xml"))
@@ -258,7 +258,7 @@ class RoutingTest {
     @Test
     fun `can add filter to a RoutingHttpHandler`() = runBlocking {
         val changePathFilter = Filter { next ->
-            HttpHandler { next(it.uri(it.uri.path("/svc/mybob.xml"))) }
+            { next(it.uri(it.uri.path("/svc/mybob.xml"))) }
         }
         val handler = changePathFilter.then("/svc" bind static())
         val req = Request(GET, Uri.of("/svc/notmybob.xml"))
@@ -267,7 +267,7 @@ class RoutingTest {
 
     @Test
     fun `can apply a filter to a RoutingHttpHandler`() = runBlocking {
-        val routes = Filter { next -> HttpHandler { next(it.header("name", "value")) } }
+        val routes = Filter { next -> { next(it.header("name", "value")) } }
             .then { Response(OK).body(it.header("name")!!) }
 
         val routingHttpHandler = routes(
@@ -278,7 +278,7 @@ class RoutingTest {
 
     @Test
     fun `RoutingHttpHandler with filters also applies when route is not found`() = runBlocking {
-        val filter = Filter { next -> HttpHandler { next(it).body("value") } }
+        val filter = Filter { next -> { next(it).body("value") } }
 
         val routingHttpHandler = filter.then(routes(
             "/a/thing" bind GET to { Response(OK) }
@@ -289,7 +289,7 @@ class RoutingTest {
 
     @Test
     fun `can apply a filter to a Router`() = runBlocking {
-        val routes = Filter { next -> HttpHandler { next(it.header("name", "value")) } }
+        val routes = Filter { next -> { next(it.header("name", "value")) } }
             .then(routes(
                 "/a/thing" bind GET to { Response(OK).body(it.header("name")!!) }
             ))

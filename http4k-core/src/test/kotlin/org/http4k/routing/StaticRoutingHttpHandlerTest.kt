@@ -86,7 +86,7 @@ open class StaticRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     @Test
     fun `can apply filters`() = runBlocking {
         val rewritePathToRootIndex = Filter { next ->
-            HttpHandler {
+            {
                 next(it.uri(it.uri.path("/index.html")))
             }
         }
@@ -176,7 +176,7 @@ open class StaticRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     @Test
     fun `can add filter to router`() = runBlocking {
         val changePathFilter = Filter { next ->
-            HttpHandler { next(it.uri(it.uri.path("/svc/mybob.xml"))) }
+            { next(it.uri(it.uri.path("/svc/mybob.xml"))) }
         }
         val handler = "/svc" bind changePathFilter.then(static())
         val req = Request(GET, of("/svc/notmybob.xml"))
@@ -187,7 +187,7 @@ open class StaticRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
     fun `can add filter to a RoutingHttpHandler`() = runBlocking {
         val calls = AtomicInteger(0)
         val changePathFilter = Filter { next ->
-            HttpHandler {
+            {
                 calls.incrementAndGet()
                 next(it.uri(it.uri.path("/svc/mybob.xml")))
             }
@@ -254,7 +254,7 @@ open class StaticRoutingHttpHandlerTest : RoutingHttpHandlerContract() {
 
     private suspend fun RoutingHttpHandler.assertFilterCalledOnce(path: String, expected: Status) {
         val calls = AtomicInteger(0)
-        val handler = Filter { next -> HttpHandler { calls.incrementAndGet(); next(it) } }.then(this)
+        val handler = Filter { next -> { calls.incrementAndGet(); next(it) } }.then(this)
         assertThat(handler(Request(GET, of(path))).status, equalTo(expected))
         assertThat(calls.get(), equalTo(1))
     }

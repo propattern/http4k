@@ -1,7 +1,6 @@
 package org.http4k.filter
 
 import org.http4k.core.Filter
-import org.http4k.core.HttpHandler
 import org.http4k.core.HttpMessage
 import org.http4k.core.MemoryBody
 import org.http4k.core.then
@@ -24,7 +23,7 @@ object DebuggingFilters {
      */
     object PrintResponse {
         operator fun invoke(out: PrintStream = System.out, debugStream: Boolean = defaultDebugStream) = Filter { next ->
-            HttpHandler {
+            {
                 try {
                     next(it).let { response ->
                         out.println(listOf("***** RESPONSE ${response.status.code} to ${it.method}: ${it.uri} *****", response.printable(debugStream)).joinToString("\n"))

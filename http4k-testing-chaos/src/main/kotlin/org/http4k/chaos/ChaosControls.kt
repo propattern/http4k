@@ -72,7 +72,7 @@ object ChaosControls {
         }
 
         val activate = Filter { next ->
-            HttpHandler {
+            {
                 if (it.body.stream.available() != 0) variable.current = setStages(it)
                 trigger.toggle(true)
                 next(it)
@@ -80,14 +80,14 @@ object ChaosControls {
         }
 
         val deactivate = Filter { next ->
-            HttpHandler {
+            {
                 trigger.toggle(false)
                 next(it)
             }
         }
 
         val toggle = Filter { next ->
-            HttpHandler {
+            {
                 trigger.toggle()
                 next(it)
             }

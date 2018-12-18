@@ -63,7 +63,7 @@ data class ContractRoutingHttpHandler(private val renderer: ContractRenderer,
     private fun identify(route: ContractRoute): Filter =
         route.describeFor(contractRoot).let { routeIdentity ->
             Filter { next ->
-                HttpHandler {
+                {
                     val xUriTemplate = UriTemplate.from(if (routeIdentity.isEmpty()) "/" else routeIdentity)
                     RoutedResponse(next(RoutedRequest(it, xUriTemplate)), xUriTemplate)
                 }

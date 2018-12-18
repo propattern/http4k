@@ -10,7 +10,6 @@ import io.github.resilience4j.retry.Retry
 import io.github.resilience4j.retry.Retry.ofDefaults
 import kotlinx.coroutines.runBlocking
 import org.http4k.core.Filter
-import org.http4k.core.HttpHandler
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.SERVICE_UNAVAILABLE
 import org.http4k.core.Status.Companion.TOO_MANY_REQUESTS
@@ -27,7 +26,7 @@ object ResilienceFilters {
         operator fun invoke(circuitBreaker: CircuitBreaker = CircuitBreaker.ofDefaults("Circuit"),
                             isError: (Response) -> Boolean = { it.status.serverError },
                             onError: () -> Response = { Response(SERVICE_UNAVAILABLE.description("Circuit is open")) }) = Filter { next ->
-            HttpHandler {
+            {
                 try {
                     circuitBreaker.executeCallable {
                         runBlocking {
@@ -53,7 +52,7 @@ object ResilienceFilters {
 
         operator fun invoke(retry: Retry = ofDefaults("Retrying"),
                             isError: (Response) -> Boolean = { it.status.serverError }) = Filter { next ->
-            HttpHandler {
+            {
                 try {
                     retry.executeCallable {
                         runBlocking {
@@ -76,7 +75,7 @@ object ResilienceFilters {
     object RateLimit {
         operator fun invoke(rateLimit: RateLimiter = RateLimiter.ofDefaults("RateLimit"),
                             onError: () -> Response = { Response(TOO_MANY_REQUESTS.description("Rate limit exceeded")) }) = Filter { next ->
-            HttpHandler {
+            {
                 try {
                     rateLimit.executeCallable { runBlocking { next(it) } }
                 } catch (e: RequestNotPermitted) {
@@ -93,7 +92,7 @@ object ResilienceFilters {
     object Bulkheading {
         operator fun invoke(bulkhead: Bulkhead = Bulkhead.ofDefaults("Bulkhead"),
                             onError: () -> Response = { Response(TOO_MANY_REQUESTS.description("Bulkhead limit exceeded")) }) = Filter { next ->
-            HttpHandler {
+            {
                 try {
                     bulkhead.executeCallable { runBlocking { next(it) } }
                 } catch (e: BulkheadFullException) {

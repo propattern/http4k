@@ -33,7 +33,7 @@ fun ClientFilters.AwsAuth(scope: AwsCredentialScope,
                           clock: Clock = Clock.systemDefaultZone(),
                           payloadMode: Payload.Mode = Payload.Mode.Signed) =
     Filter { next ->
-        HttpHandler {
+        {
             val payload = payloadMode(it)
 
             val credentials = credentialsProvider()

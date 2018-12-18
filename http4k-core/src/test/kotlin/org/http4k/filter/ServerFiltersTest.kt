@@ -296,7 +296,7 @@ class ServerFiltersTest {
         val contexts = RequestContexts()
         val handler = ServerFilters.InitialiseRequestContext(contexts)
             .then(Filter { next ->
-                HttpHandler {
+                {
                     contexts[it].set("foo", "manchu")
                     next(it)
                 }

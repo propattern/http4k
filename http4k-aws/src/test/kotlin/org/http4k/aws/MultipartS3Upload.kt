@@ -4,7 +4,6 @@ import kotlinx.coroutines.runBlocking
 import org.http4k.core.Body
 import org.http4k.core.BodyMode
 import org.http4k.core.Filter
-import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Method.DELETE
 import org.http4k.core.Method.POST
@@ -15,7 +14,7 @@ import org.http4k.core.query
 
 object MultipartS3Upload {
     operator fun invoke(size: Int, requestBodyMode: BodyMode) = Filter { next ->
-        HttpHandler {
+        {
             try {
                 val uploadId = UploadId.from(next(it.initialiseMultipart()).orFail())
 
