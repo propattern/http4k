@@ -242,7 +242,7 @@ object ServerFilters {
      * Only Gzips responses when request contains "accept-encoding" header containing 'gzip' and the content-type (sans-charset) is one of the compressible types.
      */
     class GZipContentTypes(private val compressibleContentTypes: Set<ContentType>) : Filter {
-        override fun invoke(next: HttpHandler) = RequestFilters.GunZip()
+        override suspend fun invoke(next: HttpHandler) = RequestFilters.GunZip()
             .then(ResponseFilters.GZipContentTypes(compressibleContentTypes))
             .invoke(next)
     }

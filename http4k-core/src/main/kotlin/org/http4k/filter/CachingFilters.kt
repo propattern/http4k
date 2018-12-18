@@ -42,7 +42,7 @@ object CachingFilters {
      */
     object Request {
         fun AddIfModifiedSince(clock: Clock, maxAge: Duration) = Filter { next ->
-            {
+            HttpHandler {
                 next(it.header("If-Modified-Since", RFC_1123_DATE_TIME.format(ZonedDateTime.now(clock).minus(maxAge))))
             }
         }
@@ -57,8 +57,8 @@ object CachingFilters {
         private abstract class CacheFilter(private val predicate: (org.http4k.core.Response) -> Boolean) : Filter {
             abstract fun headersFor(response: org.http4k.core.Response): Headers
 
-            override fun invoke(next: HttpHandler): HttpHandler =
-                {
+            override suspend fun invoke(next: HttpHandler): HttpHandler =
+                HttpHandler {
                     val response = next(it)
                     val headers = if (it.method == GET && predicate(response)) headersFor(response) else emptyList()
                     headers.fold(response) { memo, (first, second) -> memo.header(first, second) }
@@ -100,8 +100,8 @@ object CachingFilters {
          * By default, only applies when the status code of the response is < 400. This is overridable.
          */
         object AddETag {
-            operator fun invoke(predicate: (org.http4k.core.Response) -> Boolean = { it.status.code < 400 }): Filter = Filter { next ->
-                {
+            operator fun invoke(predicate: (org.http4k.core.Response) -> Boolean = { it.status.code < 400 }) = Filter { next ->
+                HttpHandler {
                     val response = next(it)
                     if (predicate(response)) {
                         val hashedBody = MessageDigest.getInstance("MD5")
@@ -131,7 +131,7 @@ object CachingFilters {
                         .let { addDefaultHeaderIfAbsent(it, "Expires") { RFC_1123_DATE_TIME.format(ZonedDateTime.now(clock).plus(defaultCacheTimings.maxAge.value)) } }
                         .let { addDefaultHeaderIfAbsent(it, "Vary") { "Accept-Encoding" } }
                 return Filter { next ->
-                    {
+                    HttpHandler {
                         val response = next(it)
                         if (it.method == GET && predicate(response)) addDefaultCacheHeadersIfAbsent(response) else response
                     }
