@@ -2,17 +2,17 @@ Migration task list
 ===============
 
 - Migrate Servers to async model:
-     - ApacheServer [ ]
-     - Jetty [ ]
-     - Netty [ ]
+     - ApacheServer
+     - Jetty
+     - Netty
      - ~~SunHttp~~
-     - Undertow [ ]
+     - Undertow
      
 - Migrate Clients to async model:
-    - Apache - Reimplement in terms of Async API  - drop Async module all together [ ]
+    - Apache - Reimplement in terms of Async API  - drop Async module all together
     - ~~Java~~
-    - Jetty - Reimplement in terms of Async API - bridge to coroutines [ ]
-    - OkHttp - Reimplement in terms of Async API - bridge to coroutines [ ]
+    - Jetty - Reimplement in terms of Async API - bridge to coroutines
+    - OkHttp - Reimplement in terms of Async API - bridge to coroutines
 
 - Replace ThreadLocals with CoroutineContext
     - ZipkinTraces
