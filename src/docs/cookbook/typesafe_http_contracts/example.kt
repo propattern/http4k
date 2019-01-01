@@ -75,7 +75,7 @@ suspend fun main() {
             returning("The result" to OK)
         } bindContract GET
             // note here that the trailing parameter can be ignored - it would simply be the value "divide".
-            to { first, second, _ -> { Response(OK).body((first / second).toString())} },
+            to { first, second, _ -> HttpHandler { Response(OK).body((first / second).toString())} },
         "/echo" / Path.of("name") meta {
             summary = "echo"
             queries += ageQuery

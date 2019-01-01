@@ -79,7 +79,7 @@ class OAuthProviderTest {
     }
 
     @Test
-    fun `when api returns bad status`() {
+    fun `when api returns bad status`() = runBlocking {
         oAuth(oAuthPersistence, INTERNAL_SERVER_ERROR).callback(withCodeAndValidStateButNoUrl) shouldMatch equalTo(Response(FORBIDDEN))
     }
 

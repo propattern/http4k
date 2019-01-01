@@ -104,7 +104,7 @@ class CachingFiltersTest {
     }
 
     @Test
-    fun `MaxAge - adds correct headers to GET when illegal header value`() {
+    fun `MaxAge - adds correct headers to GET when illegal header value`() = runBlocking {
         val responseWithHeaders = Response(OK).header("Date", "foobar")
 
         val response = (MaxAge(clock, Duration.ofHours(1)).then { responseWithHeaders })(Request(GET, ""))

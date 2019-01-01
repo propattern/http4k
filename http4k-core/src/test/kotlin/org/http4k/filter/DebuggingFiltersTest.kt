@@ -30,12 +30,12 @@ class DebuggingFiltersTest {
     }
 
     @Test
-    fun `prints request and response when handler blows up`() {
+    fun `prints request and response when handler blows up`() = runBlocking {
         val os = ByteArrayOutputStream()
         val req = Request(Method.GET, "")
         try {
             PrintRequestAndResponse(PrintStream(os))
-                .then { throw IllegalArgumentException("foobar") } (req)
+                .then { throw IllegalArgumentException("foobar") }(req)
             fail("did not throw")
         } catch (e: IllegalArgumentException) {
         }
