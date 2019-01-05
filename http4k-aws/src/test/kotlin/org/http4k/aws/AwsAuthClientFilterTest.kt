@@ -38,7 +38,7 @@ class AwsClientFilterTest {
     }
 
     @Test
-    fun `adds authorization header with session token`() {
+    fun `adds authorization header with session token`() = runBlocking {
         val client = ClientFilters.AwsAuth(scope, iamSessionCredentials, clock).then(audit)
 
         client(Request(Method.GET, "http://amazon/test").header("host", "foobar").header("content-length", "0"))
